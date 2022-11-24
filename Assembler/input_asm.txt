@@ -1,0 +1,10 @@
+push 10 add
+push 20
+add
+push 1
+push 2
+add 
+div add
+out
+hlt
+meow
