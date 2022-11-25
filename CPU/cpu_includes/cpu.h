@@ -9,6 +9,7 @@ struct Cpu_Info {
     int CP;
     int ip;
     int * Code;
+    int error;
 };
 
 #define DEF_CMD(name, number, arg, ...) \

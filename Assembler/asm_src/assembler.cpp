@@ -6,7 +6,7 @@
 #include <ctype.h>
 
 #include "../asm_includes/assembler.h"
-#include "../asm_includes/proc_config.h"
+#include "../../proc_config.h"
 
 //---------------------------------------------------------------------------------------------//
 
@@ -18,150 +18,239 @@ static unsigned long Get_File_Size(FILE * fp);
 //---------------------------------------------------------------------------------------------//
 
 /// @brief Function fimds out the number of strings in file
-/// @param asmbly is ptr on Asm_File_Info struct
+/// @param src_file is ptr on src_file_info struct
 /// @return The nuber of strings
-static unsigned long Get_Line_Count(Asm_File_Info * const asmbly);
+static unsigned long Get_Line_Count(src_file_info * const src_file);
 
-//---------------------------------------------------------------------------------------------//
+//-----------------------------------------------------_----------------------------------------//
 
 /// @brief Function makes strings out of source buffer
-/// @param asmbly is ptr on Asm_File_Info struct
+/// @param src_file is ptr on src_file_info struct
 /// @return Alloc_Err if making of strings failed, No_Error if it's ok
-static int Make_Strings(Asm_File_Info * const asmbly);
+static int Make_Strings(src_file_info * const src_file);
 
 //---------------------------------------------------------------------------------------------//
 
 /// @brief Function skips spaces until it finds out the digit
 /// @param str is ptr on the letter of string
-static void Skip_Space_To_Digit(char ** str);
+/// @return Incorrect_Push_Arg if there's error, No_Error if isn't
+static int Skip_Space_To_Digit(char ** str, int cmd_len);
 
 //---------------------------------------------------------------------------------------------//
 
 /// @brief Function finds out incorrect commands in source file
-/// @param asmbly is ptr on Asm_File_Info struct
+/// @param src_file is ptr on src_file_info struct
 /// @param cur_num is a number of current string
-static void Is_Space_Line(Asm_File_Info * const asmbly, int cur_num);
+static void Is_Space_Line(src_file_info * const src_file, int cur_num);
 
 //---------------------------------------------------------------------------------------------//
 
-static void Is_Extra_Arg(Asm_File_Info * const asmbly, int cur_num);
+/// @brief Function finds out extra arguments of commands
+/// @param str is prt on the letter of string
+/// @param cur_num is a number of current string
+/// @return Extra_Arg if there's error, No_Error if isn't
+static int Is_Extra_Arg(char ** str, int cur_num);
 
 //---------------------------------------------------------------------------------------------//
 
-int Asm_Ctor(FILE * input_file, Asm_File_Info * const asmbly)
+void Asm_Ctor(FILE * input_file, src_file_info * const src_file)
 {
     assert(input_file);
-    assert(asmbly);
+    assert(src_file);
 
-    if ((asmbly->symbols_count = Get_File_Size(input_file)) == Reading_File_Err)
-        return Reading_File_Err;
+    if ((src_file->symbols_count = Get_File_Size(input_file)) == Reading_File_Err)
+        src_file->error = Reading_File_Err;
 
-    char * tmp_alloc_mem = (char *) calloc(asmbly->symbols_count + 1, sizeof(char));
+    char * tmp_alloc_mem = (char *) calloc(src_file->symbols_count + 1, sizeof(char));
 
     if (tmp_alloc_mem == nullptr)
-        return Reading_File_Err;
+        src_file->error = Alloc_Err;
     
-    asmbly->buffer = tmp_alloc_mem;
+    src_file->buffer = tmp_alloc_mem;
 
-    if (fread(asmbly->buffer, sizeof(char), asmbly->symbols_count, input_file) < asmbly->lines_count)
-        return Reading_File_Err;
+    if (fread(src_file->buffer, sizeof(char), src_file->symbols_count, input_file) < src_file->lines_count)
+        src_file->error = Reading_File_Err;
 
-    asmbly->lines_count = Get_Line_Count(asmbly) + 1;
+    src_file->lines_count = Get_Line_Count(src_file) + 1;
 
-    if (Make_Strings(asmbly) == Alloc_Err)
-        return Reading_File_Err;
-
-    return No_Error;
+    if (Make_Strings(src_file) == Alloc_Err)
+        src_file->error = Alloc_Err;
 }
 
 //---------------------------------------------------------------------------------------------//
 
-void Asm_Compile(Asm_File_Info * const asmbly, int * const code_array)
+void Asm_Compile(src_file_info * const src_file, asm_file_info * const asmbly)
 {
+    assert(src_file);
     assert(asmbly);
-    assert(code_array);
 
     int cur_num_str = 0;
 
-    while (cur_num_str < asmbly->lines_count)
+    while (cur_num_str < src_file->lines_count)
     {
         char cmd[DEF_CMD_LEN] = " ";
-        
-        sscanf(asmbly->pointers[cur_num_str], "%s", cmd);
+        int cmd_len = 0;
+        sscanf(src_file->pointers[cur_num_str], "%s%n", cmd, &cmd_len);
 
         if (strcmp(cmd, "push") == 0)
         {
-            int value = 0;
-            Skip_Space_To_Digit(&asmbly->pointers[cur_num_str]);
-            sscanf(asmbly->pointers[cur_num_str], "%d", &value);
+            int push_arg = 0, arg_len = 0;
+            char * cur_str = src_file->pointers[cur_num_str];
 
-            code_array[asmbly->cmd_num] = CMD_PUSH;
-            code_array[asmbly->cmd_num + 1] = value;
+            if (Skip_Space_To_Digit(&src_file->pointers[cur_num_str], cmd_len) == Incorrext_Push_Arg)
+            {
+                src_file->error = Incorrext_Push_Arg;
+                fprintf(stderr, "Incorrect arg in %s, in line%d\n", cur_str, cur_num_str + 1);
+                break;
+            }
+
+            sscanf(src_file->pointers[cur_num_str], "%d%n", &push_arg, &arg_len);
+            
+            if (Is_Extra_Arg(&src_file->pointers[cur_num_str], arg_len) == Extra_Arg)
+            {
+                src_file->error = Extra_Arg;
+                fprintf(stderr, "The string %s in line %d has an extra argument\n", cur_str, cur_num_str + 1);
+                break;
+            }
+
+            asmbly->code_arr[asmbly->cmd_num] = CMD_PUSH;
+            asmbly->code_arr[asmbly->cmd_num+ 1] = push_arg;
             cur_num_str++;
             asmbly->cmd_num+=2;
         }
 
         else if (strcmp(cmd, "pop") == 0)
         {
-            code_array[asmbly->cmd_num] = CMD_POP;
+            char * cur_str = src_file->pointers[cur_num_str];
+            if (Is_Extra_Arg(&src_file->pointers[cur_num_str], cmd_len) == Extra_Arg)
+            {
+                src_file->error = Extra_Arg;
+                fprintf(stderr, "The string %s in line %d has extra argument\n", cur_str, cur_num_str + 1);
+                break;
+            }
+            asmbly->code_arr[asmbly->cmd_num] = CMD_POP;
             cur_num_str++;
             asmbly->cmd_num++;
         }
 
         else if (strcmp(cmd, "add") == 0)
         {
-            code_array[asmbly->cmd_num] = CMD_ADD;
+            char * cur_str = src_file->pointers[cur_num_str];
+            if (Is_Extra_Arg(&src_file->pointers[cur_num_str], cmd_len) == Extra_Arg)
+            {
+                src_file->error = Extra_Arg;
+                fprintf(stderr, "The string %s in line %d has extra argument\n", cur_str, cur_num_str + 1);
+                break;
+            }
+            asmbly->code_arr[asmbly->cmd_num] = CMD_ADD;
             cur_num_str++;
             asmbly->cmd_num++;
         }
 
         else if (strcmp(cmd, "sub") == 0)
         {
-            code_array[asmbly->cmd_num] = CMD_SUB;
+            char * cur_str = src_file->pointers[cur_num_str];
+            if (Is_Extra_Arg(&src_file->pointers[cur_num_str], cmd_len) == Extra_Arg)
+            {
+                src_file->error = Extra_Arg;
+                fprintf(stderr, "The string %s in line %d has extra argument\n", cur_str, cur_num_str + 1);
+                break;
+            }
+            asmbly->code_arr[asmbly->cmd_num] = CMD_SUB;
             cur_num_str++;
             asmbly->cmd_num++;            
         }
 
         else if (strcmp(cmd, "mul") == 0)
         {
-            code_array[asmbly->cmd_num] = CMD_MUL;
+            char * cur_str = src_file->pointers[cur_num_str];
+            if (Is_Extra_Arg(&src_file->pointers[cur_num_str], cmd_len) == Extra_Arg)
+            {
+                src_file->error = Extra_Arg;
+                fprintf(stderr, "The string %s in line %d has extra argument\n", cur_str, cur_num_str + 1);
+                break;
+            }
+            asmbly->code_arr[asmbly->cmd_num] = CMD_MUL;
             cur_num_str++;
             asmbly->cmd_num++;
         }
 
         else if (strcmp(cmd, "div") == 0)
         {
-            //Is_Extra_Arg(asmbly, cur_num_str);
-            if (asmbly->error == Extra_Arg)
+            char * cur_str = src_file->pointers[cur_num_str];
+            if (Is_Extra_Arg(&src_file->pointers[cur_num_str], cmd_len) == Extra_Arg)
             {
-                fprintf(stderr, "The string %s in line %d has extra argument\n", asmbly->pointers[cur_num_str], cur_num_str + 1);
+                src_file->error = Extra_Arg;
+                fprintf(stderr, "The string %s in line %d has extra argument\n", cur_str, cur_num_str + 1);
                 break;
             }
-            code_array[asmbly->cmd_num] = CMD_DIV;
+            asmbly->code_arr[asmbly->cmd_num] = CMD_DIV;
+            cur_num_str++;
+            asmbly->cmd_num++;
+        }
+
+        else if (strcmp(cmd, "jump") == 0)
+        {
+            char * cur_str = src_file->pointers[cur_num_str];
+            if (Is_Extra_Arg(&src_file->pointers[cur_num_str], cmd_len) == Extra_Arg)
+            {
+                src_file->error = Extra_Arg;
+                fprintf(stderr, "The string %s in line %d has extra argument\n", cur_str, cur_num_str + 1);
+                break;
+            }
+            asmbly->code_arr[asmbly->cmd_num] = CMD_JUMP;
+            cur_num_str++;
+            asmbly->cmd_num++;
+        }
+
+        else if (strcmp(cmd, "dup") == 0)
+        {
+            char * cur_str = src_file->pointers[cur_num_str];
+            if (Is_Extra_Arg(&src_file->pointers[cur_num_str], cmd_len) == Extra_Arg)
+            {
+                src_file->error = Extra_Arg;
+                fprintf(stderr, "The string %s in line %d has extra argument\n", cur_str, cur_num_str + 1);
+                break;
+            }
+            asmbly->code_arr[asmbly->cmd_num] = CMD_DUP;
             cur_num_str++;
             asmbly->cmd_num++;
         }
 
         else if (strcmp(cmd, "out") == 0)
         {
-            code_array[asmbly->cmd_num] = CMD_OUT;
+            char * cur_str = src_file->pointers[cur_num_str];
+            if (Is_Extra_Arg(&src_file->pointers[cur_num_str], cmd_len) == Extra_Arg)
+            {
+                src_file->error = Extra_Arg;
+                fprintf(stderr, "The string %s in line %d has extra argument\n", cur_str, cur_num_str + 1);
+                break;
+            }
+            asmbly->code_arr[asmbly->cmd_num] = CMD_OUT;
             cur_num_str++;
             asmbly->cmd_num++;
         }
 
         else if (strcmp(cmd, "hlt") == 0)
         {
-            code_array[asmbly->cmd_num] = CMD_HLT;
+            char * cur_str = src_file->pointers[cur_num_str];
+            if (Is_Extra_Arg(&src_file->pointers[cur_num_str], cmd_len) == Extra_Arg)
+            {
+                src_file->error = Extra_Arg;
+                fprintf(stderr, "The string %s in line %d has extra argument\n", cur_str, cur_num_str + 1);
+                break;
+            }
+            asmbly->code_arr[asmbly->cmd_num] = CMD_HLT;
             cur_num_str++;
             asmbly->cmd_num++;
         }
 
         else
         {
-            Is_Space_Line(asmbly, cur_num_str);
-            if (asmbly->error == Undefined_Cmd)
+            Is_Space_Line(src_file, cur_num_str);
+            if (src_file->error == Undefined_Cmd)
             {
-                fprintf(stderr, "Error: Incorrect command '%s' in input file in line %d\n", asmbly->pointers[cur_num_str], cur_num_str + 1);
+                fprintf(stderr, "Error: Incorrect command '%s' in input file in line %d\n", src_file->pointers[cur_num_str], cur_num_str + 1);
                 break;
             }
             else
@@ -173,33 +262,12 @@ void Asm_Compile(Asm_File_Info * const asmbly, int * const code_array)
 
 //---------------------------------------------------------------------------------------------//
 
-void Asm_Print_File(FILE * text_file, FILE * bin_file, Asm_File_Info * const asmbly, int * const code_array)
+void Asm_Dtor(src_file_info * const src_file, asm_file_info * const asmbly, FILE * input_file)
 {
-    assert(text_file);
-    assert(bin_file);
-    assert(asmbly);
-    assert(code_array);
-    
-#ifdef TEXT_FILE
-    //fprintf(interpret_file, "%d\n%d\n", DEF_CP, asmbly->cmd_num);
-
-    for (int cmd = 0; cmd < asmbly->cmd_num; cmd++)
-        fprintf(text_file, "%d ", code_array[cmd]);
-#endif
-
-#ifdef BIN_FILE
-    fwrite(code_array, sizeof(int), asmbly->cmd_num, bin_file);
-#endif
-
-}
-
-//---------------------------------------------------------------------------------------------//
-
-void Asm_Dtor(Asm_File_Info * const asmbly, int * const code_array)
-{
-    free(asmbly->buffer);
-    free(asmbly->pointers);
-    free(code_array);
+    free(src_file->buffer);
+    free(src_file->pointers);
+    free(asmbly->code_arr);
+    fclose(input_file);
 }
 
 //---------------------------------------------------------------------------------------------//
@@ -229,14 +297,14 @@ static unsigned long Get_File_Size(FILE * fp)
 
 //---------------------------------------------------------------------------------------------//
 
-static unsigned long Get_Line_Count(Asm_File_Info * const asmbly)
+static unsigned long Get_Line_Count(src_file_info * const src_file)
 {
-    assert(asmbly);
+    assert(src_file);
 
     unsigned long str_num = 0;
 
-    for (int ch = 0; ch < asmbly->symbols_count; ch++)
-        if (asmbly->buffer[ch] == '\n')
+    for (int ch = 0; ch < src_file->symbols_count; ch++)
+        if (src_file->buffer[ch] == '\n')
             str_num++;
 
     return str_num;
@@ -244,25 +312,25 @@ static unsigned long Get_Line_Count(Asm_File_Info * const asmbly)
 
 //---------------------------------------------------------------------------------------------//
 
-static int Make_Strings(Asm_File_Info * asmbly)
+static int Make_Strings(src_file_info * src_file)
 {
-    assert(asmbly);
+    assert(src_file);
 
-    char ** Tmp_Mem = (char **)calloc (asmbly->lines_count + 1, sizeof(char *));
+    char ** Tmp_Mem = (char **)calloc (src_file->lines_count + 1, sizeof(char *));
     
     if (Tmp_Mem == nullptr)
         return Alloc_Err;
 
-    asmbly->pointers = Tmp_Mem;
+    src_file->pointers = Tmp_Mem;
 
-    *(asmbly->pointers) = asmbly->buffer;
+    *(src_file->pointers) = src_file->buffer;
 
-    for (int ch = 0, cur_str = 1; ch < asmbly->symbols_count; ch++)
+    for (int ch = 0, cur_str = 1; ch < src_file->symbols_count; ch++)
     {
-        if (asmbly->buffer[ch] == '\n')
+        if (src_file->buffer[ch] == '\n')
         {
-            asmbly->buffer[ch] = '\0';
-            asmbly->pointers[cur_str++] = &asmbly->buffer[ch + 1];
+            src_file->buffer[ch] = '\0';
+            src_file->pointers[cur_str++] = &src_file->buffer[ch + 1];
         }
     }
     return No_Error;
@@ -270,52 +338,61 @@ static int Make_Strings(Asm_File_Info * asmbly)
 
 //---------------------------------------------------------------------------------------------//
 
-static void Skip_Space_To_Digit(char ** str)
+static int Skip_Space_To_Digit(char ** str, int cmd_len)
 {
     assert(str);
     assert(*str);
 
+    (*str)+=cmd_len;
+
     while (!(isdigit(**str)))
+    {
+        if (isalpha(**str))
+            return Incorrext_Push_Arg;
         (*str)++;
+    }
+
+    return No_Error;
 }  
 
 //---------------------------------------------------------------------------------------------//
 
-static void Is_Space_Line(Asm_File_Info * const asmbly, int cur_num)
+static void Is_Space_Line(src_file_info * const src_file, int cur_num)
 {
-    assert(asmbly);
+    assert(src_file);
     assert(cur_num);
 
     int space_count = 0;
-    while(**asmbly->pointers != '\0')
+    while(**src_file->pointers != '\0')
     {
-        if (isspace(**asmbly->pointers))
+        if (isspace(**src_file->pointers))
             space_count++;
-        (**asmbly->pointers)++;
+        (*src_file->pointers)++; ///// * -> **
     }
-    if (space_count != strlen(asmbly->pointers[cur_num]))
-        asmbly->error = Undefined_Cmd;
+    if (space_count != strlen(src_file->pointers[cur_num]))
+        src_file->error = Undefined_Cmd;
     else
-        asmbly->error = No_Error;
+        src_file->error = No_Error;
 }
 
 //---------------------------------------------------------------------------------------------//
 
-static void Is_Extra_Arg(Asm_File_Info * const asmbly, int cur_num)
+static int Is_Extra_Arg(char ** str, int cmd_len)
 {
-    assert(asmbly);
-    
-    while(**asmbly->pointers != '\0' && !(isspace(**asmbly->pointers)))
-        (**asmbly->pointers)++;
-    printf("%s", *asmbly->pointers);
-    
-    while(**asmbly->pointers != '\0')
+    assert(str);
+    assert(*str);
+
+    (*str)+=cmd_len;
+
+    while (**str != '\0')
     {
-        if (!(isspace(**asmbly->pointers)) && **asmbly->pointers != '\0')
-        {
-            asmbly->error = Extra_Arg;
-            break;
-        }
-        (**asmbly->pointers)++;
+        if (!(isspace(**str)))
+            return Extra_Arg;
+        (*str)++;
     }
+
+    return No_Error;
+    
 }
+
+//---------------------------------------------------------------------------------------------//

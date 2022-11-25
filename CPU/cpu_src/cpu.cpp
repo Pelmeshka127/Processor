@@ -3,7 +3,7 @@
 #include "assert.h"
 
 #include "../cpu_includes/cpu.h"
-#include "../cpu_includes/cpu_config.h"
+#include "../../proc_config.h"
 #include "../Stack/Stack/includes/stack.h"
  
 int CPU_Ctor(Cpu_Info * const Cpu, FILE * src_file, Stack * const My_Stack)
@@ -11,26 +11,16 @@ int CPU_Ctor(Cpu_Info * const Cpu, FILE * src_file, Stack * const My_Stack)
     assert(Cpu);
     assert(src_file);
 
-    //fscanf(src_file, "%d", &Cpu->CP); 
+    fread(&Cpu->CP, sizeof(int), 1, src_file);
+    fread(&Cpu->ip, sizeof(int), 1, src_file);
 
-   /*if (Cpu->CP != DEF_CP)
-    {   
-        fprintf(stderr, "Incorrect value of CP:%d, expected%d\n", Cpu->CP, DEF_CP);
-        return CP_Error;
-    }*/
-
-    //fscanf(src_file, "%d", &Cpu->ip);
-
-    int * Alloc_Mem = (int *)calloc (13, sizeof(int));
+    int * Alloc_Mem = (int *)calloc (Cpu->ip, sizeof(int));
     if (Alloc_Mem == nullptr)
         return Alloc_Err;
     
     Cpu->Code = Alloc_Mem;
 
-    /*for (int cmd = 0; cmd < 13; cmd++)
-        fscanf(src_file, "%d", &Cpu->Code[cmd]);*/
-
-    fread(Cpu->Code, sizeof(int), 13, src_file);
+    fread(Cpu->Code, sizeof(int), Cpu->ip, src_file);
 
     if (Stack_Ctor(My_Stack) == No_Error)
     {
@@ -47,7 +37,7 @@ int CPU_Compile(Cpu_Info * const Cpu, Stack * My_Stack)
     assert(My_Stack);
 
     int ip = 0;
-    while (ip < 13)
+    while (ip < Cpu->ip)
     {
         switch (Cpu->Code[ip])
         {
@@ -87,7 +77,6 @@ int CPU_Compile(Cpu_Info * const Cpu, Stack * My_Stack)
                 int a = Stack_Pop(My_Stack);
                 int b = Stack_Pop(My_Stack);
                 int c = b / a;
-                printf("%d =  %d / %d", c, b, a);
                 Stack_Push(My_Stack, c);
                 break;
             }
