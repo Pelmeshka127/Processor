@@ -5,17 +5,16 @@
 
 const int CP = 0xABCD;
 
+//---------------------------------------------------------------------------------------------//
+
 struct Cpu_Info {
     int CP;
-    int ip;
+    int size;
     int * Code;
     int error;
 };
 
-#define DEF_CMD(name, number, arg, ...) \
-    case number:                        \
-    __VA_ARGS__                         \
-    break;
+//---------------------------------------------------------------------------------------------//
 
 /// @brief 
 /// @param Cpu
@@ -23,14 +22,20 @@ struct Cpu_Info {
 /// @return
 int CPU_Ctor(Cpu_Info * const Cpu, FILE * src_file, Stack * const My_Stack);
 
+//---------------------------------------------------------------------------------------------//
+
 /// @brief 
 /// @param Cpu 
 /// @return 
 int CPU_Compile(Cpu_Info * const Cpu, Stack * const My_Stack);
 
+//---------------------------------------------------------------------------------------------//
+
 /// @brief 
 /// @param Cpu 
 /// @param src_file 
 void CPU_Dtor(Cpu_Info * const Cpu, FILE * src_file);
+
+//---------------------------------------------------------------------------------------------//
 
 #endif

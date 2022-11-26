@@ -5,22 +5,31 @@
 #include "../cpu_includes/cpu.h"
 #include "../../proc_config.h"
 #include "../Stack/Stack/includes/stack.h"
+
+//---------------------------------------------------------------------------------------------//
+
+#define DEF_CMD(name, number, arg, ...) \
+    case number:                        \
+    __VA_ARGS__                         \
+    break;
  
+//---------------------------------------------------------------------------------------------//
+
 int CPU_Ctor(Cpu_Info * const Cpu, FILE * src_file, Stack * const My_Stack)
 {
     assert(Cpu);
     assert(src_file);
 
     fread(&Cpu->CP, sizeof(int), 1, src_file);
-    fread(&Cpu->ip, sizeof(int), 1, src_file);
+    fread(&Cpu->size, sizeof(int), 1, src_file);
 
-    int * Alloc_Mem = (int *)calloc (Cpu->ip, sizeof(int));
+    int * Alloc_Mem = (int *)calloc (Cpu->size, sizeof(int));
     if (Alloc_Mem == nullptr)
         return Alloc_Err;
     
     Cpu->Code = Alloc_Mem;
 
-    fread(Cpu->Code, sizeof(int), Cpu->ip, src_file);
+    fread(Cpu->Code, sizeof(int), Cpu->size, src_file);
 
     if (Stack_Ctor(My_Stack) == No_Error)
     {
@@ -31,16 +40,50 @@ int CPU_Ctor(Cpu_Info * const Cpu, FILE * src_file, Stack * const My_Stack)
     return No_Error;
 }
 
+//---------------------------------------------------------------------------------------------//
+
 int CPU_Compile(Cpu_Info * const Cpu, Stack * My_Stack)
 {   
     assert(Cpu);
     assert(My_Stack);
 
+    int mode = true;
     int ip = 0;
-    while (ip < Cpu->ip)
+    
+    while (mode)
     {
         switch (Cpu->Code[ip])
         {
+            #include "../../cmd.h"
+
+            default:
+            {
+                fprintf(stderr, "Error, The command %d wasn't found\n", Cpu->Code[ip]);
+                mode = false;
+            }
+        }
+        ip++;
+    }
+    return No_Error;
+}
+
+//---------------------------------------------------------------------------------------------//
+
+
+void CPU_Dtor(Cpu_Info * const Cpu, FILE * src_file)
+{
+    assert(Cpu);
+    assert(src_file);
+
+    free(Cpu->Code);
+
+    fclose(src_file);
+}
+
+//---------------------------------------------------------------------------------------------//
+
+
+/*
             case CMD_PUSH:
             {
                 Stack_Push(My_Stack, Cpu->Code[ip + 1]);
@@ -91,26 +134,7 @@ int CPU_Compile(Cpu_Info * const Cpu, Stack * My_Stack)
             case CMD_HLT:
             {
                 printf("The end is near... It's there\n");
+                mode = false;
                 break;
             }
-
-            default:
-            {
-                fprintf(stderr, "The command wasn't found\n");
-            }
-        }
-        ip++;
-    }  
-    return No_Error;
-}
-
-
-void CPU_Dtor(Cpu_Info * const Cpu, FILE * src_file)
-{
-    assert(Cpu);
-    assert(src_file);
-
-    free(Cpu->Code);
-
-    fclose(src_file);
-}
+*/

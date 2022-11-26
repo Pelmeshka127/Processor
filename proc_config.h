@@ -26,7 +26,7 @@ enum Erros {
     Undefined_Cmd      = 1 << 18,
     Extra_Arg          = 1 << 19,
     Logfile_Error      = 1 << 20,
-    Incorrext_Push_Arg = 1 << 21,
+    Incorrext_Cmd_Arg = 1 << 21,
     Asm_Compile_Error  = 1 << 22,
 };
 
