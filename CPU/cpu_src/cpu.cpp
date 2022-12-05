@@ -57,6 +57,7 @@ int CPU_Compile(Cpu_Info * const cpu, Stack * My_Stack)
         switch (cpu->code[ip])
         {
             #include "../../cmd.h"
+            #include "../../jumps.h"
 
             default:
             {

@@ -102,6 +102,14 @@ void Asm_Ctor(FILE * input_file, src_file_info * const src_file, asm_file_info *
 
     if (Make_Strings(src_file) == Alloc_Err)
         asmbly->error = Alloc_Err;
+
+    asmbly->code_arr = (int *)calloc (2 * src_file->lines_count, sizeof(int));
+    if (asmbly->code_arr == nullptr)
+        asmbly->error = Alloc_Err;
+
+    asmbly->jumps_index = (int *)calloc (2 * src_file->lines_count, sizeof(int));
+    if (asmbly->jumps_index == nullptr)
+        asmbly->error = Alloc_Err;
     
     asmbly->labels = (int *)calloc (DEF_LABEL_SIZE, sizeof(int));
     if (asmbly->labels == nullptr)
@@ -113,21 +121,31 @@ void Asm_Ctor(FILE * input_file, src_file_info * const src_file, asm_file_info *
 
 //---------------------------------------------------------------------------------------------//
 
-#define DEF_CMD(name, number, arg, ...)         \
-    else if (Stricmp(#name, cmd) == 0)          \
-    {                                           \
-        if (arg)                                \
-        {                                       \
-            cmd_num+=2;                         \
-            cur_num_str++;                      \
-        }                                       \
-        else                                    \
-        {                                       \
-            cmd_num++;                          \
-            cur_num_str++;                      \
-        }                                       \
-    }                       
-
+#define DEF_CMD(name, number, arg, ...)             \
+    else if (Stricmp(#name, cmd) == 0)              \
+    {                                               \
+        if (arg)             \
+        {                                               \
+            (src_file->pointers[cur_num_str])+=cmd_len; \
+            Get_Arg(src_file, asmbly, cur_num_str, number); \
+            if (asmbly->error == Undefined_Arg)             \
+            {                                                                               \
+                fprintf(stderr, "Incorrect arg for command in line %d\n", cur_num_str + 1); \
+                break;  \
+            }           \
+        }                       \
+        else if (arg == 0)           \
+        {                                                   \
+            asmbly->code_arr[asmbly->cmd_num++] = number;                               \
+            if (Is_Extra_Arg(&src_file->pointers[cur_num_str], cmd_len) == Extra_Arg)   \
+            {                                                                           \
+                asmbly->error = Extra_Arg;                                                                      \
+                fprintf(stderr, "The string %s in line %d has an extra argument\n", cur_str, cur_num_str + 1);  \
+                break;  \
+            }           \
+        }               \
+        cur_num_str++;  \
+    }
 //---------------------------------------------------------------------------------------------//
 
 void Fisrt_Asm_Compile(src_file_info * const src_file, asm_file_info * const asmbly)
@@ -136,79 +154,34 @@ void Fisrt_Asm_Compile(src_file_info * const src_file, asm_file_info * const asm
     assert(asmbly);
 
     int cur_num_str = 0;
-    int cmd_num = 0;
+    int jump_index=  0;
 
     while (cur_num_str < (int) src_file->lines_count)
     {
         char cmd[DEF_CMD_LEN] = " ";
+        int cmd_len = 0;
+        sscanf(src_file->pointers[cur_num_str], "%s%n", cmd, &cmd_len);
         char * cur_str = src_file->pointers[cur_num_str];
-        sscanf(src_file->pointers[cur_num_str], "%s", cmd);
 
         if (strchr(cmd, ':') != nullptr)
         {
             Skip_Space_To_Digit(&src_file->pointers[cur_num_str]);
             int label = 0;
             sscanf(src_file->pointers[cur_num_str], "%d", &label);
-            asmbly->labels[label] = cmd_num;
+            asmbly->labels[label] = asmbly->cmd_num;
             cur_num_str++;
         }
 
-        #include "../../cmd1.h"
-/*
-        else if (Stricmp("push", cmd) == 0)
+        else if (strchr(cmd, 'j') != nullptr)
         {
-            cmd_num+=2;
+            asmbly->jumps_index[jump_index++] = asmbly->cmd_num;
+            asmbly->code_arr[asmbly->cmd_num++] = -1;
+            asmbly->code_arr[asmbly->cmd_num++] = -1;
             cur_num_str++;
         }
 
-        else if (Stricmp("pop", cmd) == 0)
-        {
-            cmd_num+=2;
-            cur_num_str++;
-        }
+        #include "../../cmd.h"
 
-        else if (Stricmp("jb", cmd) == 0)
-        {
-            cmd_num+=2;
-            cur_num_str++;
-        }
-        
-        else if (Stricmp("add", cmd) == 0)
-        {
-            cmd_num++;
-            cur_num_str++;
-        }
-
-        else if (Stricmp("mul", cmd) == 0)
-        {
-            cmd_num++;
-            cur_num_str++;
-        }
-
-        else if (Stricmp("sub", cmd) == 0)
-        {
-            cmd_num++;
-            cur_num_str++;
-        }
-
-        else if (Stricmp("div", cmd) == 0)
-        {
-            cmd_num++;
-            cur_num_str++;
-        }
-
-        else if (Stricmp("out", cmd) == 0)
-        {
-            cmd_num++;
-            cur_num_str++;
-        }
-
-        else if (Stricmp("hlt", cmd) == 0)
-        {
-            cmd_num++;
-            cur_num_str++;
-        }
-*/
         else
         {
             Is_Space_Line(&src_file->pointers[cur_num_str], asmbly, cur_num_str);
@@ -226,38 +199,15 @@ void Fisrt_Asm_Compile(src_file_info * const src_file, asm_file_info * const asm
 //---------------------------------------------------------------------------------------------//
 
 #define DEF_CMD(name, number, arg, ...)             \
-    else if (Stricmp(#name, cmd) == 0)              \
+    else if (Stricmp(#name, cmd) == 0)               \
     {                                               \
-        if (arg == Digit || arg == Reg)             \
-        {                                               \
-            (src_file->pointers[cur_num_str])+=cmd_len; \
-            Get_Arg(src_file, asmbly, cur_num_str, number); \
-            if (asmbly->error == Undefined_Arg)             \
-            {                                                                               \
-                fprintf(stderr, "Incorrect arg for command in line %d\n", cur_num_str + 1); \
-                break;  \
-            }           \
-        }                       \
-        else if (arg == Label)       \
-        {                                               \
-            (src_file->pointers[cur_num_str])+=cmd_len; \
-            asmbly->code_arr[asmbly->cmd_num++] = number;           \
-            Skip_Space_To_Digit(&src_file->pointers[cur_num_str]);  \
-            int label = 0;                                          \
-            sscanf(src_file->pointers[cur_num_str], "%d", &label);      \
-            asmbly->code_arr[asmbly->cmd_num++] = asmbly->labels[label];\
-        }                   \
-        else if (arg == 0)           \
-        {                                                   \
-            asmbly->code_arr[asmbly->cmd_num++] = number;                               \
-            if (Is_Extra_Arg(&src_file->pointers[cur_num_str], cmd_len) == Extra_Arg)   \
-            {                                                                           \
-                asmbly->error = Extra_Arg;                                                                      \
-                fprintf(stderr, "The string %s in line %d has an extra argument\n", cur_str, cur_num_str + 1);  \
-                break;  \
-            }           \
-        }               \
-        cur_num_str++;  \
+        asmbly->code_arr[asmbly->jumps_index[jump_index]] = number; \
+        (src_file->pointers[cur_num_str])+=cmd_len; \
+        Skip_Space_To_Digit(&src_file->pointers[cur_num_str]);  \
+        int label = 0;                                          \
+        sscanf(src_file->pointers[cur_num_str], "%d", &label);      \
+        asmbly->code_arr[asmbly->jumps_index[jump_index++] + 1] = asmbly->labels[label];\
+        cur_num_str;\
     }
 
 //---------------------------------------------------------------------------------------------//
@@ -268,6 +218,7 @@ void Second_Asm_Compile(src_file_info * const src_file, asm_file_info * const as
     assert(asmbly);
 
     int cur_num_str = 0;
+    int jump_index = 0;
 
     while (cur_num_str < (int) src_file->lines_count)
     {
@@ -279,18 +230,11 @@ void Second_Asm_Compile(src_file_info * const src_file, asm_file_info * const as
         if (strchr(cmd, ':') != nullptr)
             cur_num_str++;
 
-        #include "../../cmd.h"
+        #include "../../jumps.h"
 
         else
         {
-            Is_Space_Line(&src_file->pointers[cur_num_str], asmbly, cur_num_str);
-            if (asmbly->error == Undefined_Cmd)
-            {
-                fprintf(stderr, "Error: Incorrect command '%s' in input file in line %d\n", cur_str, cur_num_str + 1);
-                break;
-            }
-            else
-                cur_num_str++;
+            cur_num_str++;
         }
     }
 }
@@ -385,6 +329,7 @@ void Asm_Dtor(src_file_info * const src_file, asm_file_info * const asmbly, FILE
     free(src_file->pointers);
     free(asmbly->code_arr);
     free(asmbly->labels);
+    free(asmbly->jumps_index);
     fclose(input_file);
 }
 

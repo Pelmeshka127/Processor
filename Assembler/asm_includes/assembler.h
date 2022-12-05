@@ -19,6 +19,7 @@ struct asm_file_info {
     int cmd_num;
     int * code_arr;
     int * labels;
+    int * jumps_index;
     int error;
 };
 

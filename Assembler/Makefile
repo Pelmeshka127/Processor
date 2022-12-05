@@ -28,6 +28,9 @@ main.o: ./asm_src/main.cpp
 assembler.o: ./asm_src/assembler.cpp
 	g++ -c asm_src/assembler.cpp $(FLAGS) -o asm_obj/assembler.o
 
+preproc: ./asm_src/assembler.cpp
+	g++ -c asm_src/assembler.cpp $(FLAGS) -E -o asm_obj/preproc.cpp
+
 .PHONY: clean
 
 clean:

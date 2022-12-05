@@ -10,7 +10,7 @@ int main(int argc, char ** argv)
 {
     src_file_info src_file = {nullptr, 0, 0, nullptr};
 
-    asm_file_info asmbly = {DEF_CP, 0, nullptr, nullptr, No_Error};
+    asm_file_info asmbly = {DEF_CP, 0, nullptr, nullptr, nullptr, No_Error};
 
     FILE * input_file = nullptr, * text_file, * bin_file = nullptr;
 
@@ -51,16 +51,10 @@ int main(int argc, char ** argv)
         return Reading_File_Err;
     }
 
-    asmbly.code_arr = (int *)calloc (2 * src_file.lines_count, sizeof(int));
-    
-    if (asmbly.code_arr == nullptr)
-        return Alloc_Err;
-
     Fisrt_Asm_Compile(&src_file, &asmbly);
-    printf("First success\n");
 
     Second_Asm_Compile(&src_file, &asmbly);
-    printf("Second success\n");
+
     if (asmbly.error != No_Error)
     {
         fprintf(stderr, "Building of asm file failed\n");
