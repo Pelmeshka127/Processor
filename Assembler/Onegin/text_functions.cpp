@@ -7,7 +7,6 @@
 #include <sys/stat.h>
 
 #include "text_functions.h"
-
 /// function moves pointer of the string forward to '\0'
 static void Move_Strptr(char ** str);
 
@@ -27,7 +26,7 @@ static int Make_Strings(struct Text_Info * Onegin);
 static void Onegin_Swap(struct Text_Info * Onegin, int i_elem, int j_elem);
 
 /// function swaps strings
-static void New_Onegin_Swap(void * first, void * second, size_t size)
+static void New_Onegin_Swap(void * first, void * second, size_t size);
 
 
 int Direct_Lex_Cmp(const void * p1, const void * p2)

@@ -12,14 +12,29 @@ struct src_file_info {
     unsigned long symbols_count;
     unsigned long lines_count;
     char ** pointers;
-    int error;
 };
 
 struct asm_file_info {
     int cp;
     int cmd_num;
     int * code_arr;
+    int * labels;
+    int error;
 };
+
+//---------------------------------------------------------------------------------------------//
+
+/// @brief Function finds out labels and writes them to the label arr
+/// @param src_file is ptr on src_file_info struct
+/// @param asmbly is ptr on asm_file_info struct
+void Fisrt_Asm_Compile(src_file_info * const src_file, asm_file_info * const asmbly);
+
+//---------------------------------------------------------------------------------------------//
+
+/// @brief Function writes down the codes of the comands to the code_array
+/// @param src_file is ptr on src_file_info struct
+/// @param asmbly is ptr on asm_file_info struct
+void Second_Asm_Compile(src_file_info * const src_file, asm_file_info * const asmbly);
 
 //---------------------------------------------------------------------------------------------//
 
@@ -27,21 +42,14 @@ struct asm_file_info {
 /// @param fp is pointer on the source file
 /// @param src_file is ptr on src_file_info struct
 /// @return Reading file error if counstruction failed, No_Error if it's ok
-void Asm_Ctor(FILE * fp, src_file_info * const src_file);
-
-//---------------------------------------------------------------------------------------------//
-
-/// @brief Function writes down the codes of the comands to the code_array
-/// @param src_file is ptr on src_file_info struct
-/// @param code_array is the array of codes of the commands
-void Asm_Compile(src_file_info * const src_file, asm_file_info * const asmbly);
+void Asm_Ctor(FILE * fp, src_file_info * const src_file, asm_file_info * const asmbly);
 
 //---------------------------------------------------------------------------------------------//
 
 /// @brief Function frees allocated memory and closes files
-/// @param input_file is ptr on source file
-/// @param output_file is ptr on result file
 /// @param src_file is ptr on src_file_info struct
+/// @param asmbly is ptr on asm_file_info struct
+/// @param input_file is ptr on source file
 void Asm_Dtor(src_file_info * const src_file, asm_file_info * const asmbly, FILE * input_file);
 
 //---------------------------------------------------------------------------------------------//

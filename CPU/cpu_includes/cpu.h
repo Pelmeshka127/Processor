@@ -10,7 +10,8 @@ const int CP = 0xABCD;
 struct Cpu_Info {
     int CP;
     int size;
-    int * Code;
+    int * registers;
+    int * code;
     int error;
 };
 
@@ -20,21 +21,21 @@ struct Cpu_Info {
 /// @param Cpu
 /// @param src_file 
 /// @return
-int CPU_Ctor(Cpu_Info * const Cpu, FILE * src_file, Stack * const My_Stack);
+int CPU_Ctor(Cpu_Info * const cpu, FILE * src_file, Stack * const My_Stack);
 
 //---------------------------------------------------------------------------------------------//
 
 /// @brief 
-/// @param Cpu 
+/// @param cpu 
 /// @return 
-int CPU_Compile(Cpu_Info * const Cpu, Stack * const My_Stack);
+int CPU_Compile(Cpu_Info * const cpu, Stack * const My_Stack);
 
 //---------------------------------------------------------------------------------------------//
 
 /// @brief 
-/// @param Cpu 
+/// @param cpu 
 /// @param src_file 
-void CPU_Dtor(Cpu_Info * const Cpu, FILE * src_file);
+void CPU_Dtor(Cpu_Info * const cpu, FILE * src_file);
 
 //---------------------------------------------------------------------------------------------//
 

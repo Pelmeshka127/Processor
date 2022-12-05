@@ -8,9 +8,9 @@
 
 int main(int argc, char ** argv)
 {
-    src_file_info src_file = {nullptr, 0, 0, nullptr, No_Error};
+    src_file_info src_file = {nullptr, 0, 0, nullptr};
 
-    asm_file_info asmbly = {};
+    asm_file_info asmbly = {DEF_CP, 0, nullptr, nullptr, No_Error};
 
     FILE * input_file = nullptr, * text_file, * bin_file = nullptr;
 
@@ -43,9 +43,9 @@ int main(int argc, char ** argv)
 
 #endif
 
-    Asm_Ctor(input_file, &src_file);
+    Asm_Ctor(input_file, &src_file, &asmbly);
     
-    if (src_file.error != No_Error)
+    if (asmbly.error != No_Error)
     {
         fprintf(stderr, "Reading of input_file failed\n");
         return Reading_File_Err;
@@ -56,15 +56,17 @@ int main(int argc, char ** argv)
     if (asmbly.code_arr == nullptr)
         return Alloc_Err;
 
-    Asm_Compile(&src_file, &asmbly);
+    Fisrt_Asm_Compile(&src_file, &asmbly);
+    printf("First success\n");
 
-    if (src_file.error != No_Error)
+    Second_Asm_Compile(&src_file, &asmbly);
+    printf("Second success\n");
+    if (asmbly.error != No_Error)
     {
         fprintf(stderr, "Building of asm file failed\n");
+        Asm_Dtor(&src_file, &asmbly, input_file);
         return Asm_Compile_Error;
-    }
-
-    asmbly.cp = DEF_CP;
+    } 
 
 #ifdef TEXT_FILE
 
@@ -81,7 +83,7 @@ int main(int argc, char ** argv)
 
     fwrite(&asmbly.cp, sizeof(int), 1, bin_file);
     fwrite(&asmbly.cmd_num, sizeof(int), 1, bin_file);
-    fwrite(asmbly.code_arr, sizeof(int), asmbly.cmd_num, bin_file);
+    fwrite(asmbly.code_arr, sizeof(int), (unsigned long) asmbly.cmd_num, bin_file);
 
 #endif
 

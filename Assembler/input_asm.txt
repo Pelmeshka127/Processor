@@ -1,9 +1,19 @@
-push 10
-push 20
-add
 push 1
-push 2
-add   
-div
+pop ax
+
+:3
+push ax
+push ax
+mul
 out
+
+push ax
+push 1
+add
+pop ax
+
+push 10
+push ax
+jb :3
+
 hlt

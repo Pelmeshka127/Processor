@@ -9,7 +9,7 @@
 
 int main(void)
 {
-    Cpu_Info Cpu = {};
+    Cpu_Info cpu = {};
 
     FILE * text_file = nullptr, * bin_file = nullptr;
 
@@ -27,12 +27,12 @@ int main(void)
         return Src_File_Err;
     }
 
-    if (CPU_Ctor(&Cpu, bin_file, &My_Stack) == CP_Error)
+    if (CPU_Ctor(&cpu, bin_file, &My_Stack) == CP_Error)
         return CP_Error;
 
-    CPU_Compile(&Cpu, &My_Stack);
+    CPU_Compile(&cpu, &My_Stack);
 
-    CPU_Dtor(&Cpu, bin_file);
+    CPU_Dtor(&cpu, bin_file);
 
     Stack_Dtor(&My_Stack);
 
