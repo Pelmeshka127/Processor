@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 
 #include "text_functions.h"
+
 /// function moves pointer of the string forward to '\0'
 static void Move_Strptr(char ** str);
 
@@ -14,10 +15,10 @@ static void Move_Strptr(char ** str);
 static void Back_Move_Strptr(char ** str);
 
 /// functions finds out the number of symbols in file
-static int Get_File_Size(FILE *);
+static unsigned long Get_File_Size(FILE *);
 
 /// functions finds out the number of strings in file
-static int Get_Num_Str(FILE *, struct Text_Info * Onegin);
+static unsigned long Get_Line_Count(struct Text_Info * Onegin);
 
 /// function make strings from input file
 static int Make_Strings(struct Text_Info * Onegin);
@@ -31,11 +32,8 @@ static void New_Onegin_Swap(void * first, void * second, size_t size);
 
 int Direct_Lex_Cmp(const void * p1, const void * p2)
 {
-    Onegin_Line_Info * Onegin_Struct_1 = (Onegin_Line_Info *) p1;
-    Onegin_Line_Info * Onehin_Struct_2 = (Onegin_Line_Info *) p2;
-
-    char * str1 = Onegin_Struct_1->string;
-    char * str2 = Onehin_Struct_2->string;
+    char * str1 = * (char **) p1;
+    char * str2 = * (char **) p2;
 
     while (*str1 != '\0' && *str2 != '\0')
     {
@@ -62,14 +60,14 @@ int Direct_Lex_Cmp(const void * p1, const void * p2)
 
 int Reverse_Lex_Cmp(const void * p1, const void * p2)
 { 
-    Onegin_Line_Info * Onegin_Struct_1 = (Onegin_Line_Info *) p1;
-    Onegin_Line_Info * Onegin_Struct_2 = (Onegin_Line_Info *) p2;
+    char * s1 = * (char **) p1;
+    char * s2 = * (char **) p2;
 
-    int len1 = Onegin_Struct_1->len_str;
-    int len2 = Onegin_Struct_2->len_str;
+    int len1 = strlen(s1);
+    int len2 = strlen(s2);
 
-    char * str1 = Onegin_Struct_1->string + len1 - 1;
-    char * str2 = Onegin_Struct_2->string + len2 - 1;
+    char * str1 = s1 + len1 - 1;
+    char * str2 = s2 + len2 - 1;
 
     while(len1-- != 0 && len2-- != 0)
     {
@@ -109,35 +107,20 @@ int Check_Cmdline_Arg(int argc)
 
 int Onegin_Read(struct Text_Info * Onegin, FILE * input_file) 
 {
-    if ((Onegin->n_symb = Get_File_Size(input_file)) == Reading_File_Error) 
+    if ((Onegin->symbols_count = Get_File_Size(input_file)) == Reading_File_Error)
         return Reading_File_Error;
 
-    if ((Onegin->text_string = (char *)calloc (Onegin->n_symb + 1, sizeof(char))) == NULL)
-    {
-        ONEGIN_ERROR();
-        return Reading_File_Error;
-    }
+    Onegin->buffer = (char *) calloc(Onegin->symbols_count + 1, sizeof(char));
+    if (Onegin->buffer == NULL)
+        return Alloc_Error;
 
-    if (fread(Onegin->text_string, sizeof(char), Onegin->n_symb + 1, input_file) < Onegin->n_str)
-    {
-        ONEGIN_ERROR();
+    if (fread(Onegin->buffer, sizeof(char), Onegin->symbols_count, input_file) < Onegin->lines_count)
         return Reading_File_Error;
-    }
 
-    Get_Num_Str(input_file, Onegin);
+    Onegin->lines_count = Get_Line_Count(Onegin) + 1;
 
     if (Make_Strings(Onegin) == Alloc_Error)
-        return Reading_File_Error;
-
-    if (Onegin->n_str == 0 || Onegin->n_symb == 0)
-    {
-        fprintf(stderr, "Error: number of srings Onegin->Strings is %lu\n"
-                        "number of symols in Onegin->Strings is %lu\n", Onegin->n_str, Onegin->n_symb);
-        return Reading_File_Error;
-    }
-
-    if (Onegin->Strings == NULL)
-        return Reading_File_Error;
+        return Alloc_Error;
 
     return 0;
 }
@@ -145,9 +128,9 @@ int Onegin_Read(struct Text_Info * Onegin, FILE * input_file)
 
 void Onegin_Sort(struct Text_Info * Onegin, int Comporator(const void *, const void *))
 {
-    for (int i = 0; i < Onegin->n_str - 1; i++)
-        for (int j = i + 1; j < Onegin->n_str; j++)
-            if (Comporator(&Onegin->Strings[i], &Onegin->Strings[j]) > 0)
+    for (int i = 0; i < Onegin->lines_count - 1; i++)
+        for (int j = i + 1; j < Onegin->lines_count; j++)
+            if (Comporator(&Onegin->pointers[i], &Onegin->pointers[j]) > 0)
                 Onegin_Swap(Onegin, i, j);
 }
 
@@ -158,19 +141,19 @@ void Onegin_Qsort(struct Text_Info * Onegin, int first, int last, int Comporator
     {
         int left = first, right = last;
 
-        Onegin_Line_Info middle = Onegin->Strings[(left + right) / 2];
+        char * middle = Onegin->pointers[(left + right) / 2];
 
         do
         {
-            while (Comporator(&Onegin->Strings[left], &middle) < 0)
+            while (Comporator(&Onegin->pointers[left], &middle) < 0)
                 left++;
 
-            while (Comporator(&Onegin->Strings[right], &middle) > 0) 
+            while (Comporator(&Onegin->pointers[right], &middle) > 0) 
                 right--;
 
             if (left <= right)
             {
-                New_Onegin_Swap(&Onegin->Strings[left], &Onegin->Strings[right], sizeof(Onegin_Line_Info));
+                New_Onegin_Swap(&Onegin->pointers[left], &Onegin->pointers[right], sizeof(char *));
                 left++;
                 right--;
             }
@@ -184,15 +167,15 @@ void Onegin_Qsort(struct Text_Info * Onegin, int first, int last, int Comporator
 
 void Onegin_Print_To_File(struct Text_Info * Onegin, FILE * fp)
 {
-    for (int cur_str = 0; cur_str < Onegin->n_str; cur_str++)
-        fprintf(fp, "%s", Onegin->Strings[cur_str].string);
+    for (int cur_str = 0; cur_str < Onegin->lines_count; cur_str++)
+        fprintf(fp, "%s\n", Onegin->pointers[cur_str]);
 }
 
 
 void Onegin_Dtor(struct Text_Info * Onegin)
 {
-    free(Onegin->Strings);
-    free(Onegin->text_string);
+    free(Onegin->pointers);
+    free(Onegin->buffer);
 }
 
 
@@ -215,73 +198,66 @@ static void Back_Move_Strptr(char ** str)
         (*str)--;
 }
 
-
-static int Get_File_Size(FILE * fp)
+static unsigned long Get_File_Size(FILE * fp)
 {
     struct stat buf = {};
 
     if (fstat(fileno(fp), &buf) == -1)
-    {
-        ONEGIN_ERROR();
         return Reading_File_Error;
-    }
 
-    return buf.st_size;
+    return (unsigned long) buf.st_size;
 }
 
+//---------------------------------------------------------------------------------------------//
 
-static int Get_Num_Str(FILE * fp, struct Text_Info * Onegin)
+static unsigned long Get_Line_Count(Text_Info * const Onegin)
 {
-    int cur_ch = 0, str_num = 0;
-    while (cur_ch < Onegin->n_symb)
-    {
-        if (Onegin->text_string[cur_ch++] == '\n')
-        {
-            Onegin->n_str++;
-        }
-    }
-    return Onegin->n_str;
+    assert(Onegin);
+
+    unsigned long str_num = 0;
+
+    for (unsigned long ch = 0; ch < Onegin->symbols_count; ch++)
+        if (Onegin->buffer[ch] == '\n')
+            str_num++;
+            
+    return str_num;
 }
 
+//---------------------------------------------------------------------------------------------//
 
-static int Make_Strings(struct Text_Info * Onegin)
+static int Make_Strings(Text_Info * const Onegin)
 {
-    if ((Onegin->Strings = (Onegin_Line_Info *)calloc (Onegin->n_str+1, sizeof(Onegin_Line_Info))) == NULL)
-    {
-        ONEGIN_ERROR();
-        return Alloc_Error;
-    }
+    assert(Onegin);
+
+    char ** Tmp_Mem = (char **)calloc (Onegin->lines_count + 1, sizeof(char *));
     
-    int ch = 0, cur_len = 0, num_str = 0;
-    while (num_str < Onegin->n_str)
+    if (Tmp_Mem == NULL)
+        return Alloc_Error;
+
+    Onegin->pointers = Tmp_Mem;
+
+    *(Onegin->pointers) = Onegin->buffer;
+
+    for (unsigned long ch = 0, cur_str = 1; ch < Onegin->symbols_count; ch++)
     {
-        cur_len++;
-        ch++;
-        if (Onegin->text_string[ch] == '\n')
+        if (Onegin->buffer[ch] == '\n')
         {
-            Onegin->text_string[ch] = '\0';
-
-            Onegin->Strings[num_str].len_str = cur_len;
-            Onegin->Strings[num_str].string = &Onegin->text_string[ch - cur_len];
-
-            num_str++;
-            cur_len = 0;
-            ch++;
+            Onegin->buffer[ch] = '\0';
+            Onegin->pointers[cur_str++] = &Onegin->buffer[ch + 1];
         }
     }
     return 0;
 }
 
+//---------------------------------------------------------------------------------------------//
 
 static void Onegin_Swap(struct Text_Info * Onegin, int i_elem, int j_elem)
 {
-    Onegin_Line_Info Temp = {};
+    char * Temp = Onegin->pointers[i_elem];
 
-    Temp = Onegin->Strings[i_elem];
+    Onegin->pointers[i_elem] = Onegin->pointers[j_elem];
 
-    Onegin->Strings[i_elem] = Onegin->Strings[j_elem];
-
-    Onegin->Strings[j_elem] = Temp;
+    Onegin->pointers[j_elem] = Temp;
 }
 
 

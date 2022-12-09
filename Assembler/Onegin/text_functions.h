@@ -1,21 +1,11 @@
 #ifndef TEXT_FUNCTIONS_H_
 #define TEXT_FUNCTIONS_H_
 
-#define C_QSORT 1
-
-#define MY_QSORT 2
-
-#define SORT_TYPE 1
-
-struct Onegin_Line_Info {
-    char * string;
-    int len_str;
-};
-
 struct Text_Info {
-    char * text_string;
-    unsigned long n_str, n_symb;
-    Onegin_Line_Info * Strings;
+    char * buffer;
+    unsigned long symbols_count;
+    unsigned long lines_count;
+    char ** pointers;
 };
 
 #define ONEGIN_ERROR() \

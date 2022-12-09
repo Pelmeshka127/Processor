@@ -1,0 +1,599 @@
+//---------------------------------------------------------------------------------------------//
+
+Stack_Dump was called at 18:28:02
+At Dec  9 2022
+In file ./src/stack.cpp
+In function int Stack_Ctor(Stack *const)
+In line 83
+
+Stack has an adress 0x16af0b220. 
+
+The value of left Canary is 3735928559. It's adress is 0x16af0b220. 
+
+The capacity of stack is 3
+The size of stack is 0
+
+The value of canary_left_data is 3735928559. It's adress is 0x107400c10. 
+
+The [0] elem of data is -1. It's adress is 0x107400c18. 
+The [1] elem of data is -1. It's adress is 0x107400c1c. 
+The [2] elem of data is -1. It's adress is 0x107400c20. 
+
+The value of stack->error is No_Err
+
+The value of canary_right_data is 3735928559. It's adress is 0x107400c38. 
+
+The value of right Canary is 3735928559. It's adress is 0x16af0b248. 
+
+The value of stack_hash is 4133632500. It's adress is 0x16af0b250.
+
+The value of data_hash is 1731712953. It's adress is 0x16af0b258.
+
+//---------------------------------------------------------------------------------------------//
+
+Stack_Dump was called at 18:28:02
+At Dec  9 2022
+In file ./src/stack.cpp
+In function elem_t Stack_Pop(Stack *const)
+In line 124
+
+Stack has an adress 0x16af0b220. 
+
+The value of left Canary is 3735928559. It's adress is 0x16af0b220. 
+
+The capacity of stack is 3
+The size of stack is 0
+
+The value of canary_left_data is 3735928559. It's adress is 0x107400c10. 
+
+The [0] elem of data is -1. It's adress is 0x107400c18. 
+The [1] elem of data is -1. It's adress is 0x107400c1c. 
+The [2] elem of data is -1. It's adress is 0x107400c20. 
+
+The value od stack->error is Underflow
+
+The value of canary_right_data is 3735928559. It's adress is 0x107400c38. 
+
+The value of right Canary is 3735928559. It's adress is 0x16af0b248. 
+
+The value of stack_hash is 4133632500. It's adress is 0x16af0b250.
+
+The value of data_hash is 1731712953. It's adress is 0x16af0b258.
+
+THE VALUE OF SIZE : 0 IN FILE ./src/stack.cpp; IN FUNCTION elem_t Stack_Pop(Stack *const); IN LINE 124
+
+//---------------------------------------------------------------------------------------------//
+
+Stack_Dump was called at 18:33:57
+At Dec  9 2022
+In file ./src/stack.cpp
+In function int Stack_Ctor(Stack *const)
+In line 83
+
+Stack has an adress 0x16f133220. 
+
+The value of left Canary is 3735928559. It's adress is 0x16f133220. 
+
+The capacity of stack is 3
+The size of stack is 0
+
+The value of canary_left_data is 3735928559. It's adress is 0x103100c10. 
+
+The [0] elem of data is -1. It's adress is 0x103100c18. 
+The [1] elem of data is -1. It's adress is 0x103100c1c. 
+The [2] elem of data is -1. It's adress is 0x103100c20. 
+
+The value of stack->error is No_Err
+
+The value of canary_right_data is 3735928559. It's adress is 0x103100c38. 
+
+The value of right Canary is 3735928559. It's adress is 0x16f133248. 
+
+The value of stack_hash is 4133632500. It's adress is 0x16f133250.
+
+The value of data_hash is 1731712953. It's adress is 0x16f133258.
+
+//---------------------------------------------------------------------------------------------//
+
+Stack_Dump was called at 18:33:57
+At Dec  9 2022
+In file ./src/stack.cpp
+In function elem_t Stack_Pop(Stack *const)
+In line 124
+
+Stack has an adress 0x16f133220. 
+
+The value of left Canary is 3735928559. It's adress is 0x16f133220. 
+
+The capacity of stack is 3
+The size of stack is 0
+
+The value of canary_left_data is 3735928559. It's adress is 0x103100c10. 
+
+The [0] elem of data is -1. It's adress is 0x103100c18. 
+The [1] elem of data is -1. It's adress is 0x103100c1c. 
+The [2] elem of data is -1. It's adress is 0x103100c20. 
+
+The value od stack->error is Underflow
+
+The value of canary_right_data is 3735928559. It's adress is 0x103100c38. 
+
+The value of right Canary is 3735928559. It's adress is 0x16f133248. 
+
+The value of stack_hash is 4133632500. It's adress is 0x16f133250.
+
+The value of data_hash is 1731712953. It's adress is 0x16f133258.
+
+THE VALUE OF SIZE : 0 IN FILE ./src/stack.cpp; IN FUNCTION elem_t Stack_Pop(Stack *const); IN LINE 124
+
+//---------------------------------------------------------------------------------------------//
+
+Stack_Dump was called at 18:33:57
+At Dec  9 2022
+In file ./src/stack.cpp
+In function int Stack_Ctor(Stack *const)
+In line 83
+
+Stack has an adress 0x16f893220. 
+
+The value of left Canary is 3735928559. It's adress is 0x16f893220. 
+
+The capacity of stack is 3
+The size of stack is 0
+
+The value of canary_left_data is 3735928559. It's adress is 0x102b00c10. 
+
+The [0] elem of data is -1. It's adress is 0x102b00c18. 
+The [1] elem of data is -1. It's adress is 0x102b00c1c. 
+The [2] elem of data is -1. It's adress is 0x102b00c20. 
+
+The value of stack->error is No_Err
+
+The value of canary_right_data is 3735928559. It's adress is 0x102b00c38. 
+
+The value of right Canary is 3735928559. It's adress is 0x16f893248. 
+
+The value of stack_hash is 4133632500. It's adress is 0x16f893250.
+
+The value of data_hash is 1731712953. It's adress is 0x16f893258.
+
+//---------------------------------------------------------------------------------------------//
+
+Stack_Dump was called at 18:33:57
+At Dec  9 2022
+In file ./src/stack.cpp
+In function elem_t Stack_Pop(Stack *const)
+In line 124
+
+Stack has an adress 0x16f893220. 
+
+The value of left Canary is 3735928559. It's adress is 0x16f893220. 
+
+The capacity of stack is 3
+The size of stack is 0
+
+The value of canary_left_data is 3735928559. It's adress is 0x102b00c10. 
+
+The [0] elem of data is -1. It's adress is 0x102b00c18. 
+The [1] elem of data is -1. It's adress is 0x102b00c1c. 
+The [2] elem of data is -1. It's adress is 0x102b00c20. 
+
+The value od stack->error is Underflow
+
+The value of canary_right_data is 3735928559. It's adress is 0x102b00c38. 
+
+The value of right Canary is 3735928559. It's adress is 0x16f893248. 
+
+The value of stack_hash is 4133632500. It's adress is 0x16f893250.
+
+The value of data_hash is 1731712953. It's adress is 0x16f893258.
+
+THE VALUE OF SIZE : 0 IN FILE ./src/stack.cpp; IN FUNCTION elem_t Stack_Pop(Stack *const); IN LINE 124
+
+//---------------------------------------------------------------------------------------------//
+
+Stack_Dump was called at 18:33:57
+At Dec  9 2022
+In file ./src/stack.cpp
+In function int Stack_Ctor(Stack *const)
+In line 83
+
+Stack has an adress 0x16f99b240. 
+
+The value of left Canary is 3735928559. It's adress is 0x16f99b240. 
+
+The capacity of stack is 3
+The size of stack is 0
+
+The value of canary_left_data is 3735928559. It's adress is 0x102b00c10. 
+
+The [0] elem of data is -1. It's adress is 0x102b00c18. 
+The [1] elem of data is -1. It's adress is 0x102b00c1c. 
+The [2] elem of data is -1. It's adress is 0x102b00c20. 
+
+The value of stack->error is No_Err
+
+The value of canary_right_data is 3735928559. It's adress is 0x102b00c38. 
+
+The value of right Canary is 3735928559. It's adress is 0x16f99b268. 
+
+The value of stack_hash is 4133632500. It's adress is 0x16f99b270.
+
+The value of data_hash is 1731712953. It's adress is 0x16f99b278.
+
+//---------------------------------------------------------------------------------------------//
+
+Stack_Dump was called at 18:33:57
+At Dec  9 2022
+In file ./src/stack.cpp
+In function int Stack_Push(Stack *const, const int)
+In line 108
+
+Stack has an adress 0x16f99b240. 
+
+The value of left Canary is 3735928559. It's adress is 0x16f99b240. 
+
+The capacity of stack is 3
+The size of stack is 1
+
+The value of canary_left_data is 3735928559. It's adress is 0x102b00c10. 
+
+The [0] elem of data is 5. It's adress is 0x102b00c18. 
+The [1] elem of data is -1. It's adress is 0x102b00c1c. 
+The [2] elem of data is -1. It's adress is 0x102b00c20. 
+
+The value of stack->error is No_Err
+
+The value of canary_right_data is 3735928559. It's adress is 0x102b00c38. 
+
+The value of right Canary is 3735928559. It's adress is 0x16f99b268. 
+
+The value of stack_hash is 4133632500. It's adress is 0x16f99b270.
+
+The value of data_hash is 1731712953. It's adress is 0x16f99b278.
+
+//---------------------------------------------------------------------------------------------//
+
+Stack_Dump was called at 18:33:57
+At Dec  9 2022
+In file ./src/stack.cpp
+In function elem_t Stack_Pop(Stack *const)
+In line 140
+
+Stack has an adress 0x16f99b240. 
+
+The value of left Canary is 3735928559. It's adress is 0x16f99b240. 
+
+The capacity of stack is 3
+The size of stack is 0
+
+The value of canary_left_data is 3735928559. It's adress is 0x102b00c10. 
+
+The [0] elem of data is -1. It's adress is 0x102b00c18. 
+The [1] elem of data is -1. It's adress is 0x102b00c1c. 
+The [2] elem of data is -1. It's adress is 0x102b00c20. 
+
+The value of stack->error is No_Err
+
+The value of canary_right_data is 3735928559. It's adress is 0x102b00c38. 
+
+The value of right Canary is 3735928559. It's adress is 0x16f99b268. 
+
+The value of stack_hash is 4133632500. It's adress is 0x16f99b270.
+
+The value of data_hash is 1731712953. It's adress is 0x16f99b278.
+
+//---------------------------------------------------------------------------------------------//
+
+Stack_Dump was called at 18:37:19
+At Dec  9 2022
+In file ./src/stack.cpp
+In function int Stack_Ctor(Stack *const)
+In line 83
+
+Stack has an adress 0x16f027240. 
+
+The value of left Canary is 3735928559. It's adress is 0x16f027240. 
+
+The capacity of stack is 3
+The size of stack is 0
+
+The value of canary_left_data is 3735928559. It's adress is 0x103300c10. 
+
+The [0] elem of data is -1. It's adress is 0x103300c18. 
+The [1] elem of data is -1. It's adress is 0x103300c1c. 
+The [2] elem of data is -1. It's adress is 0x103300c20. 
+
+The value of stack->error is No_Err
+
+The value of canary_right_data is 3735928559. It's adress is 0x103300c38. 
+
+The value of right Canary is 3735928559. It's adress is 0x16f027268. 
+
+The value of stack_hash is 4133632500. It's adress is 0x16f027270.
+
+The value of data_hash is 1731712953. It's adress is 0x16f027278.
+
+//---------------------------------------------------------------------------------------------//
+
+Stack_Dump was called at 18:37:19
+At Dec  9 2022
+In file ./src/stack.cpp
+In function int Stack_Push(Stack *const, const int)
+In line 108
+
+Stack has an adress 0x16f027240. 
+
+The value of left Canary is 3735928559. It's adress is 0x16f027240. 
+
+The capacity of stack is 3
+The size of stack is 1
+
+The value of canary_left_data is 3735928559. It's adress is 0x103300c10. 
+
+The [0] elem of data is 5. It's adress is 0x103300c18. 
+The [1] elem of data is -1. It's adress is 0x103300c1c. 
+The [2] elem of data is -1. It's adress is 0x103300c20. 
+
+The value of stack->error is No_Err
+
+The value of canary_right_data is 3735928559. It's adress is 0x103300c38. 
+
+The value of right Canary is 3735928559. It's adress is 0x16f027268. 
+
+The value of stack_hash is 4133632500. It's adress is 0x16f027270.
+
+The value of data_hash is 1731712953. It's adress is 0x16f027278.
+
+//---------------------------------------------------------------------------------------------//
+
+Stack_Dump was called at 18:37:19
+At Dec  9 2022
+In file ./src/stack.cpp
+In function elem_t Stack_Pop(Stack *const)
+In line 140
+
+Stack has an adress 0x16f027240. 
+
+The value of left Canary is 3735928559. It's adress is 0x16f027240. 
+
+The capacity of stack is 3
+The size of stack is 0
+
+The value of canary_left_data is 3735928559. It's adress is 0x103300c10. 
+
+The [0] elem of data is -1. It's adress is 0x103300c18. 
+The [1] elem of data is -1. It's adress is 0x103300c1c. 
+The [2] elem of data is -1. It's adress is 0x103300c20. 
+
+The value of stack->error is No_Err
+
+The value of canary_right_data is 3735928559. It's adress is 0x103300c38. 
+
+The value of right Canary is 3735928559. It's adress is 0x16f027268. 
+
+The value of stack_hash is 4133632500. It's adress is 0x16f027270.
+
+The value of data_hash is 1731712953. It's adress is 0x16f027278.
+
+//---------------------------------------------------------------------------------------------//
+
+Stack_Dump was called at 18:37:19
+At Dec  9 2022
+In file ./src/stack.cpp
+In function int Stack_Ctor(Stack *const)
+In line 83
+
+Stack has an adress 0x16af33240. 
+
+The value of left Canary is 3735928559. It's adress is 0x16af33240. 
+
+The capacity of stack is 3
+The size of stack is 0
+
+The value of canary_left_data is 3735928559. It's adress is 0x107500c10. 
+
+The [0] elem of data is -1. It's adress is 0x107500c18. 
+The [1] elem of data is -1. It's adress is 0x107500c1c. 
+The [2] elem of data is -1. It's adress is 0x107500c20. 
+
+The value of stack->error is No_Err
+
+The value of canary_right_data is 3735928559. It's adress is 0x107500c38. 
+
+The value of right Canary is 3735928559. It's adress is 0x16af33268. 
+
+The value of stack_hash is 4133632500. It's adress is 0x16af33270.
+
+The value of data_hash is 1731712953. It's adress is 0x16af33278.
+
+//---------------------------------------------------------------------------------------------//
+
+Stack_Dump was called at 18:37:19
+At Dec  9 2022
+In file ./src/stack.cpp
+In function int Stack_Push(Stack *const, const int)
+In line 108
+
+Stack has an adress 0x16af33240. 
+
+The value of left Canary is 3735928559. It's adress is 0x16af33240. 
+
+The capacity of stack is 3
+The size of stack is 1
+
+The value of canary_left_data is 3735928559. It's adress is 0x107500c10. 
+
+The [0] elem of data is 5. It's adress is 0x107500c18. 
+The [1] elem of data is -1. It's adress is 0x107500c1c. 
+The [2] elem of data is -1. It's adress is 0x107500c20. 
+
+The value of stack->error is No_Err
+
+The value of canary_right_data is 3735928559. It's adress is 0x107500c38. 
+
+The value of right Canary is 3735928559. It's adress is 0x16af33268. 
+
+The value of stack_hash is 4133632500. It's adress is 0x16af33270.
+
+The value of data_hash is 1731712953. It's adress is 0x16af33278.
+
+//---------------------------------------------------------------------------------------------//
+
+Stack_Dump was called at 18:37:19
+At Dec  9 2022
+In file ./src/stack.cpp
+In function elem_t Stack_Pop(Stack *const)
+In line 140
+
+Stack has an adress 0x16af33240. 
+
+The value of left Canary is 3735928559. It's adress is 0x16af33240. 
+
+The capacity of stack is 3
+The size of stack is 0
+
+The value of canary_left_data is 3735928559. It's adress is 0x107500c10. 
+
+The [0] elem of data is -1. It's adress is 0x107500c18. 
+The [1] elem of data is -1. It's adress is 0x107500c1c. 
+The [2] elem of data is -1. It's adress is 0x107500c20. 
+
+The value of stack->error is No_Err
+
+The value of canary_right_data is 3735928559. It's adress is 0x107500c38. 
+
+The value of right Canary is 3735928559. It's adress is 0x16af33268. 
+
+The value of stack_hash is 4133632500. It's adress is 0x16af33270.
+
+The value of data_hash is 1731712953. It's adress is 0x16af33278.
+
+//---------------------------------------------------------------------------------------------//
+
+Stack_Dump was called at 18:37:19
+At Dec  9 2022
+In file ./src/stack.cpp
+In function int Stack_Ctor(Stack *const)
+In line 83
+
+Stack has an adress 0x16ee4b220. 
+
+The value of left Canary is 3735928559. It's adress is 0x16ee4b220. 
+
+The capacity of stack is 3
+The size of stack is 0
+
+The value of canary_left_data is 3735928559. It's adress is 0x103400c10. 
+
+The [0] elem of data is -1. It's adress is 0x103400c18. 
+The [1] elem of data is -1. It's adress is 0x103400c1c. 
+The [2] elem of data is -1. It's adress is 0x103400c20. 
+
+The value of stack->error is No_Err
+
+The value of canary_right_data is 3735928559. It's adress is 0x103400c38. 
+
+The value of right Canary is 3735928559. It's adress is 0x16ee4b248. 
+
+The value of stack_hash is 4133632500. It's adress is 0x16ee4b250.
+
+The value of data_hash is 1731712953. It's adress is 0x16ee4b258.
+
+//---------------------------------------------------------------------------------------------//
+
+Stack_Dump was called at 18:37:19
+At Dec  9 2022
+In file ./src/stack.cpp
+In function elem_t Stack_Pop(Stack *const)
+In line 124
+
+Stack has an adress 0x16ee4b220. 
+
+The value of left Canary is 3735928559. It's adress is 0x16ee4b220. 
+
+The capacity of stack is 3
+The size of stack is 0
+
+The value of canary_left_data is 3735928559. It's adress is 0x103400c10. 
+
+The [0] elem of data is -1. It's adress is 0x103400c18. 
+The [1] elem of data is -1. It's adress is 0x103400c1c. 
+The [2] elem of data is -1. It's adress is 0x103400c20. 
+
+The value od stack->error is Underflow
+
+The value of canary_right_data is 3735928559. It's adress is 0x103400c38. 
+
+The value of right Canary is 3735928559. It's adress is 0x16ee4b248. 
+
+The value of stack_hash is 4133632500. It's adress is 0x16ee4b250.
+
+The value of data_hash is 1731712953. It's adress is 0x16ee4b258.
+
+THE VALUE OF SIZE : 0 IN FILE ./src/stack.cpp; IN FUNCTION elem_t Stack_Pop(Stack *const); IN LINE 124
+
+//---------------------------------------------------------------------------------------------//
+
+Stack_Dump was called at 18:45:20
+At Dec  9 2022
+In file ./src/stack.cpp
+In function int Stack_Ctor(Stack *const)
+In line 83
+
+Stack has an adress 0x16b2eb220. 
+
+The value of left Canary is 3735928559. It's adress is 0x16b2eb220. 
+
+The capacity of stack is 3
+The size of stack is 0
+
+The value of canary_left_data is 3735928559. It's adress is 0x107000c10. 
+
+The [0] elem of data is -1. It's adress is 0x107000c18. 
+The [1] elem of data is -1. It's adress is 0x107000c1c. 
+The [2] elem of data is -1. It's adress is 0x107000c20. 
+
+The value of stack->error is No_Err
+
+The value of canary_right_data is 3735928559. It's adress is 0x107000c38. 
+
+The value of right Canary is 3735928559. It's adress is 0x16b2eb248. 
+
+The value of stack_hash is 4133632500. It's adress is 0x16b2eb250.
+
+The value of data_hash is 1731712953. It's adress is 0x16b2eb258.
+
+//---------------------------------------------------------------------------------------------//
+
+Stack_Dump was called at 18:45:20
+At Dec  9 2022
+In file ./src/stack.cpp
+In function elem_t Stack_Pop(Stack *const)
+In line 124
+
+Stack has an adress 0x16b2eb220. 
+
+The value of left Canary is 3735928559. It's adress is 0x16b2eb220. 
+
+The capacity of stack is 3
+The size of stack is 0
+
+The value of canary_left_data is 3735928559. It's adress is 0x107000c10. 
+
+The [0] elem of data is -1. It's adress is 0x107000c18. 
+The [1] elem of data is -1. It's adress is 0x107000c1c. 
+The [2] elem of data is -1. It's adress is 0x107000c20. 
+
+The value od stack->error is Underflow
+
+The value of canary_right_data is 3735928559. It's adress is 0x107000c38. 
+
+The value of right Canary is 3735928559. It's adress is 0x16b2eb248. 
+
+The value of stack_hash is 4133632500. It's adress is 0x16b2eb250.
+
+The value of data_hash is 1731712953. It's adress is 0x16b2eb258.
+
+THE VALUE OF SIZE : 0 IN FILE ./src/stack.cpp; IN FUNCTION elem_t Stack_Pop(Stack *const); IN LINE 124
+

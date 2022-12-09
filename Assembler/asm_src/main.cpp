@@ -8,11 +8,11 @@
 
 int main(int argc, char ** argv)
 {
-    src_file_info src_file = {nullptr, 0, 0, nullptr};
+    src_file_info src_file = {.buffer = nullptr, 0, 0, nullptr};
 
     asm_file_info asmbly = {DEF_CP, 0, nullptr, nullptr, nullptr, No_Error};
 
-    FILE * input_file = nullptr, * text_file, * bin_file = nullptr;
+    FILE * input_file = nullptr, * text_file = nullptr, * bin_file = nullptr;
 
     if (Check_Cmdline_Arg(argc) == Cmd_Line_Arg_Err)
         return Cmd_Line_Arg_Err;
@@ -20,7 +20,7 @@ int main(int argc, char ** argv)
     if ((input_file = fopen(argv[1], "r")) == nullptr)
     {
         fprintf(stderr, "Incorrect file %s.\n%s\n", argv[1], strerror(errno));
-        return Input_File_Err;
+        return Src_File_Err;
     }
 
 #ifdef TEXT_FILE
@@ -28,7 +28,7 @@ int main(int argc, char ** argv)
     if ((text_file = fopen(argv[2], "w")) == nullptr)
     {
         fprintf(stderr, "Incorrect file %s.\n%s\n", argv[2], strerror(errno));
-        return Interpret_File_Err;
+        return Src_File_Err;
     }
 
 #endif
@@ -38,12 +38,12 @@ int main(int argc, char ** argv)
     if ((bin_file = fopen(argv[3], "w")) == nullptr)
     {
         fprintf(stderr, "Incorrect file %s.\n%s\n", argv[3], strerror(errno));
-        return Interpret_File_Err;
+        return Src_File_Err;
     }
 
 #endif
 
-    Asm_Ctor(input_file, &src_file, &asmbly);
+    Asm_Ctor(input_file, &src_file, &asmbly); // TODO use ret value
     
     if (asmbly.error != No_Error)
     {
@@ -64,7 +64,7 @@ int main(int argc, char ** argv)
 
 #ifdef TEXT_FILE
 
-    fprintf(text_file, "%d\n%d\n", asmbly.cp, asmbly.cmd_num);
+    fprintf(text_file, "%d\n%d\n", asmbly.cp, asmbly.cmd_num); // TODO: listing
 
     for (int cmd = 0; cmd < asmbly.cmd_num; cmd++)
         fprintf(text_file, "%d ", asmbly.code_arr[cmd]);
@@ -75,7 +75,7 @@ int main(int argc, char ** argv)
 
 #ifdef BIN_FILE
 
-    fwrite(&asmbly.cp, sizeof(int), 1, bin_file);
+    fwrite(&asmbly.cp, sizeof(int), 1, bin_file); // TODO struct Header
     fwrite(&asmbly.cmd_num, sizeof(int), 1, bin_file);
     fwrite(asmbly.code_arr, sizeof(int), (unsigned long) asmbly.cmd_num, bin_file);
 

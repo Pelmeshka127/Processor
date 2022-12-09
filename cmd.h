@@ -1,62 +1,154 @@
-#ifndef CMD_H_
-#define CMD_H_
+#define PUSH_STACK(elem)  \
+    Stack_Push(&cpu->stack, elem)
+
+#define POP_STACK   \
+    Stack_Pop(&cpu->stack)
+
+#define PUSH_RET_STACK(elem)    \
+    Stack_Push(&cpu->ret_stack, elem)
+
+#define POP_RET_STACK   \
+    Stack_Pop(&cpu->ret_stack)
 
 DEF_CMD(HLT, CMD_HLT, 0, 
 {
-    printf("The end is near... It's there\n");
+    printf("The end\n");
     mode = false;
 })
 
 DEF_CMD(PUSH, CMD_PUSH, Digit, 
 {
-    Stack_Push(My_Stack, cpu->code[ip + 1]);
+    PUSH_STACK(cpu->code[ip + 1]);
     ip++;
 })
 
 DEF_CMD(PUSH, CMD_PUSH_REG, Reg,
 {
-    Stack_Push(My_Stack, cpu->registers[cpu->code[ip+1]]);
+    PUSH_STACK(cpu->registers[cpu->code[ip+1]]);
     ip++;
 })
 
 DEF_CMD(POP, CMD_POP, Digit, 
 {
-    Stack_Pop(My_Stack);
+    POP_STACK;
 })
 
 DEF_CMD(POP, CMD_POP_REG, Reg, 
 {
-    cpu->registers[cpu->code[ip+1]] = Stack_Pop(My_Stack);
+    cpu->registers[cpu->code[ip+1]] = POP_STACK;
     ip++;
 })
 
 DEF_CMD(ADD, CMD_ADD, 0, 
 {
-    Stack_Push(My_Stack, Stack_Pop(My_Stack) + Stack_Pop(My_Stack));
+    PUSH_STACK(POP_STACK + POP_STACK);
 })
 
 DEF_CMD(SUB, CMD_SUB, 0, 
 {
-    Stack_Push(My_Stack, Stack_Pop(My_Stack) - Stack_Pop(My_Stack));
+    PUSH_STACK(POP_STACK - POP_STACK);
 })
 
 DEF_CMD(MUL, CMD_MUL, 0,
 {
-    Stack_Push(My_Stack, Stack_Pop(My_Stack) * Stack_Pop(My_Stack));
+    PUSH_STACK(POP_STACK * POP_STACK);
 })
 
 DEF_CMD(DIV, CMD_DIV, 0,
 {
-    int a = Stack_Pop(My_Stack);
-    int b = Stack_Pop(My_Stack);
+    int a = POP_STACK;
+    int b = POP_STACK; // div 
     int c = b / a;
-    Stack_Push(My_Stack, c);
+    PUSH_STACK(c);
 })
 
 DEF_CMD(OUT, CMD_OUT, 0,
 {
-    int value = Stack_Pop(My_Stack);
+    int value = POP_STACK;
     printf("The result is %d\n", value);
 })
 
-#endif
+DEF_CMD(CALL, CMD_CALL, Label,
+{
+    PUSH_RET_STACK(ip + 1);
+    ip = cpu->code[ip + 1];
+    ip--;
+})
+
+DEF_CMD(RET, CMD_RET, 0,
+{
+    ip = POP_RET_STACK;
+    ip--;
+})
+
+DEF_CMD(JUMP, CMD_JUMP, Label, 
+{
+    ip = cpu->code[ip + 1];
+    ip--;
+})  
+
+DEF_CMD(JB, CMD_JB, Label, 
+{
+    if (POP_STACK < POP_STACK)
+    {
+        ip = cpu->code[ip + 1];
+        ip--;
+    }
+    else
+        ip++;
+})
+
+DEF_CMD(JBE, CMD_JBE, Label, 
+{
+    if (POP_STACK <= POP_STACK)
+    {
+        ip = cpu->code[ip + 1];
+        ip--;
+    }
+    else 
+        ip++;
+})
+
+DEF_CMD(JA, CMD_JA, Label, 
+{
+    if (POP_STACK > POP_STACK)
+    {
+        ip = cpu->code[ip + 1];
+        ip--;
+    }
+    else 
+        ip++;
+})
+
+DEF_CMD(JAE, CMD_JAE, Label, 
+{
+    if (POP_STACK >= POP_STACK)
+    {
+        ip = cpu->code[ip + 1];
+        ip--;
+    }
+    else 
+        ip++;
+})
+
+DEF_CMD(JE, CMD_JE, Label,
+{
+    if (POP_STACK == POP_STACK)
+    {
+        ip = cpu->code[ip + 1];
+        ip--;
+    }
+    else 
+        ip++;
+})
+
+DEF_CMD(JNE, CMD_JNE, Label,
+{
+    if (POP_STACK != POP_STACK)
+    {
+        ip = cpu->code[ip + 1];
+        ip--;
+    }
+    else 
+        ip++;
+})

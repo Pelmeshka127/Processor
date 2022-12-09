@@ -1,4 +1,4 @@
-all: cputask
+all: disasmtask
 
 FLAGS = -D _DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++\
  -Wc++14-compat -Wmissing-declarations\
@@ -19,25 +19,16 @@ FLAGS = -D _DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++\
 			   -fsanitize=object-size,return,returns-nonnull-attribute,shift,\
 			   -fsanitize=address,signed-integer-overflow,undefined,unreachable,vla-bound,vptr,
 
-cputask: main.o cpu.o stack.o debug.o
-	g++ cpu_obj/main.o cpu_obj/cpu.o cpu_obj/stack.o cpu_obj/debug.o $(FLAGS) -o cpuiu
+disasmtask: main.o disasm.o
+	g++ disasm_obj/main.o disasm_obj/disasm.o $(FLAGS) -o disasmbly
 
-main.o: ./cpu_src/main.cpp
-	g++ -c ./cpu_src/main.cpp $(FLAGS) -o cpu_obj/main.o
+main.o: ./disasm_src/main.cpp
+	g++ -c ./disasm_src/main.cpp $(FLAGS) -o disasm_obj/main.o
 
-cpu.o: ./cpu_src/cpu.cpp
-	g++ -c ./cpu_src/cpu.cpp $(FLAGS) -o cpu_obj/cpu.o
+disasm.o: ./disasm_src/disasm.cpp
+	g++ -c ./disasm_src/disasm.cpp $(FLAGS) -o disasm_obj/disasm.o
 
-stack.o: ./Stack/Stack/src/stack.cpp
-	g++ -c ./Stack/Stack/src/stack.cpp $(FLAGS) -o cpu_obj/stack.o
-
-debug.o: ./Stack/Stack/src/debug.cpp
-	g++ -c ./Stack/Stack/src/debug.cpp $(FLAGS) -o cpu_obj/debug.o
-
-preproc: ./cpu_src/cpu.cpp
-	g++ -c cpu_src/cpu.cpp $(FLAGS) -E -o cpu_obj/preproc.cpp
+preproc: ./disasm_src/disasm.cpp
+	g++ -c disasm_src/disasm.cpp $(FLAGS) -E -o disasm_obj/preproc.cpp
 
 .PHONY: clean
-
-clean:
-	rm *.o cpuiu

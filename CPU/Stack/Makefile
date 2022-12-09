@@ -1,4 +1,4 @@
-all: cputask
+all: stacktask
 
 FLAGS = -D _DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++\
  -Wc++14-compat -Wmissing-declarations\
@@ -19,25 +19,22 @@ FLAGS = -D _DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++\
 			   -fsanitize=object-size,return,returns-nonnull-attribute,shift,\
 			   -fsanitize=address,signed-integer-overflow,undefined,unreachable,vla-bound,vptr,
 
-cputask: main.o cpu.o stack.o debug.o
-	g++ cpu_obj/main.o cpu_obj/cpu.o cpu_obj/stack.o cpu_obj/debug.o $(FLAGS) -o cpuiu
+stacktask: main.o stack.o debug.o log.o
+	g++ ./obj/main.o ./obj/stack.o ./obj/debug.o ./obj/log.o $(FLAGS) -o stack
 
-main.o: ./cpu_src/main.cpp
-	g++ -c ./cpu_src/main.cpp $(FLAGS) -o cpu_obj/main.o
+main.o: ./src/main.cpp
+	g++ -c ./src/main.cpp $(FLAGS) -o ./obj/main.o
 
-cpu.o: ./cpu_src/cpu.cpp
-	g++ -c ./cpu_src/cpu.cpp $(FLAGS) -o cpu_obj/cpu.o
+stack.o: ./src/stack.cpp
+	g++ -c ./src/stack.cpp $(FLAGS) -o ./obj/stack.o
 
-stack.o: ./Stack/Stack/src/stack.cpp
-	g++ -c ./Stack/Stack/src/stack.cpp $(FLAGS) -o cpu_obj/stack.o
+debug.o: ./src/debug.cpp
+	g++ -c ./src/debug.cpp $(FLAGS) -o ./obj/debug.o
 
-debug.o: ./Stack/Stack/src/debug.cpp
-	g++ -c ./Stack/Stack/src/debug.cpp $(FLAGS) -o cpu_obj/debug.o
-
-preproc: ./cpu_src/cpu.cpp
-	g++ -c cpu_src/cpu.cpp $(FLAGS) -E -o cpu_obj/preproc.cpp
+log.o: ./src/log.cpp
+	g++ -c ./src/log.cpp $(FLAGS)	-o ./obj/log.o
 
 .PHONY: clean
 
 clean:
-	rm *.o cpuiu
+	rm *.o stackj

@@ -4,22 +4,18 @@
 #include <errno.h>
 
 #include "../cpu_includes/cpu.h"
-#include "../Stack/Stack/includes/stack.h"
+#include "../Stack/includes/stack.h"
 #include "../../proc_config.h"
 
 int main(void)
 {
-    Cpu_Info cpu = {};
+    cpu_info cpu = {};
 
     FILE * text_file = nullptr, * bin_file = nullptr;
 
-    Stack My_Stack = {};
+    cpu.stack = {};
 
-    if ((text_file = fopen("../Assembler/prog.txt", "rb")) == nullptr)
-    {
-        fprintf(stderr, "%s\n", strerror(errno));
-        return Src_File_Err;
-    }
+    cpu.ret_stack = {};
 
     if ((bin_file = fopen("../Assembler/prog.bin", "rb")) == nullptr)
     {
@@ -27,14 +23,14 @@ int main(void)
         return Src_File_Err;
     }
 
-    if (CPU_Ctor(&cpu, bin_file, &My_Stack) == CP_Error)
-        return CP_Error;
+    if (CPU_Ctor(&cpu, bin_file) != No_Error)
+        return CPU_Compile_Error;
 
-    CPU_Compile(&cpu, &My_Stack);
+    if (CPU_Compile(&cpu) != No_Error)
+        return CPU_Compile_Error;
+        
 
     CPU_Dtor(&cpu, bin_file);
-
-    Stack_Dtor(&My_Stack);
 
     return 0;
 }

@@ -1,41 +1,41 @@
 #ifndef CPU_H_
 #define CPU_H_
 
-#include "../Stack/Stack/includes/stack.h"
-
-const int CP = 0xABCD;
+#include "../Stack/includes/stack.h"
 
 //---------------------------------------------------------------------------------------------//
 
-struct Cpu_Info {
-    int CP;
-    int size;
-    int * registers;
-    int * code;
-    int error;
+/// @brief This struct includes the information about our CPU
+struct cpu_info {
+    int CP;             // The value of CP for checking correct file
+    size_t size;        // The size of commands in file
+    int * registers;    // The arrray of registers
+    int * code;         // The array of code which includes commands
+    Stack stack;        // The struct of Stack
+    Stack ret_stack;         
 };
 
 //---------------------------------------------------------------------------------------------//
 
-/// @brief 
-/// @param Cpu
-/// @param src_file 
-/// @return
-int CPU_Ctor(Cpu_Info * const cpu, FILE * src_file, Stack * const My_Stack);
+/// @brief Function constructs cpu_info struct with info from source file and Stack library
+/// @param cpu is pts on cpu_info struct
+/// @param src_file is ptr on source file
+/// @return Alloc_Err if construction failed, No_Error if it's ok
+int CPU_Ctor(cpu_info * const cpu, FILE * src_file);
 
 //---------------------------------------------------------------------------------------------//
 
-/// @brief 
-/// @param cpu 
-/// @return 
-int CPU_Compile(Cpu_Info * const cpu, Stack * const My_Stack);
+/// @brief Function compiles the array of commands
+/// @param cpu is pts on cpu_info struct
+/// @return CPU_Compile_Error if compiling failed, No_Error if it's ok
+int CPU_Compile(cpu_info * const cpu);
 
 //---------------------------------------------------------------------------------------------//
 
-/// @brief 
-/// @param cpu 
-/// @param src_file 
-void CPU_Dtor(Cpu_Info * const cpu, FILE * src_file);
+/// @brief Function closes files and cleans allocated memory
+/// @param cpu is ptr on cpu_info struct
+/// @param src_file is ptr on source file
+void CPU_Dtor(cpu_info * const cpu, FILE * src_file);
 
 //---------------------------------------------------------------------------------------------//
 

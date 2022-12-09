@@ -21,6 +21,9 @@ enum CMD {
     CMD_JE       = 26,
     CMD_JNE      = 27,
 
+    CMD_CALL     = 31,
+    CMD_RET      = 32,
+
     CMD_HLT      = 0,
 };
 
@@ -33,19 +36,17 @@ enum Regs {
 
 enum Erros {
     No_Error           = 1 << 10,
-    CP_Error           = 1 << 11,
+    Cmd_Line_Arg_Err   = 1 << 11,
     Src_File_Err       = 1 << 12,
-    Interpret_File_Err = 1 << 13,
-    Reading_File_Err   = 1 << 14,
-    Alloc_Err          = 1 << 15,
-    Cmd_Line_Arg_Err   = 1 << 16,
-    Input_File_Err     = 1 << 17,
-    Undefined_Cmd      = 1 << 18,
-    Extra_Arg          = 1 << 19,
-    Logfile_Error      = 1 << 20,
-    Incorrext_Cmd_Arg  = 1 << 21,
-    Asm_Compile_Error  = 1 << 22,
-    Undefined_Arg      = 1 << 23,
+    Reading_File_Err   = 1 << 13,
+    Alloc_Err          = 1 << 14,
+    Undefined_Cmd      = 1 << 15,
+    Undefined_Arg      = 1 << 16,
+    Extra_Arg          = 1 << 17,
+    Incorrext_Cmd_Arg  = 1 << 18,
+    Asm_Compile_Error  = 1 << 19,
+    CP_Error           = 1 << 20,
+    CPU_Compile_Error  = 1 << 21,
 };
 
 enum Args {
