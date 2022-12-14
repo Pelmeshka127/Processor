@@ -23,12 +23,13 @@ static unsigned long Get_Line_Count(struct Text_Info * Onegin);
 /// function make strings from input file
 static int Make_Strings(struct Text_Info * Onegin);
 
+/*
 /// function swaps strings
 static void Onegin_Swap(struct Text_Info * Onegin, int i_elem, int j_elem);
 
 /// function swaps strings
 static void New_Onegin_Swap(void * first, void * second, size_t size);
-
+*/
 
 int Direct_Lex_Cmp(const void * p1, const void * p2)
 {
@@ -93,19 +94,7 @@ int Reverse_Lex_Cmp(const void * p1, const void * p2)
 }
 
 
-int Check_Cmdline_Arg(int argc)
-{
-    if (argc != 5)
-    {
-        ONEGIN_ERROR();
-        fprintf(stderr, "Error: wrong number of command line args: %d\n", argc);
-        return Cmdline_Error;
-    }
-    return 0;
-}
-
-
-int Onegin_Read(struct Text_Info * Onegin, FILE * input_file) 
+int Onegin_Read(struct Text_Info * Onegin, FILE * input_file)
 {
     if ((Onegin->symbols_count = Get_File_Size(input_file)) == Reading_File_Error)
         return Reading_File_Error;
@@ -125,7 +114,7 @@ int Onegin_Read(struct Text_Info * Onegin, FILE * input_file)
     return 0;
 }
 
-
+/*
 void Onegin_Sort(struct Text_Info * Onegin, int Comporator(const void *, const void *))
 {
     for (int i = 0; i < Onegin->lines_count - 1; i++)
@@ -163,7 +152,7 @@ void Onegin_Qsort(struct Text_Info * Onegin, int first, int last, int Comporator
         Onegin_Qsort(Onegin, left, last, Comporator);
     }
 }
-
+*/
 
 void Onegin_Print_To_File(struct Text_Info * Onegin, FILE * fp)
 {
@@ -251,6 +240,8 @@ static int Make_Strings(Text_Info * const Onegin)
 
 //---------------------------------------------------------------------------------------------//
 
+/*
+
 static void Onegin_Swap(struct Text_Info * Onegin, int i_elem, int j_elem)
 {
     char * Temp = Onegin->pointers[i_elem];
@@ -327,3 +318,4 @@ static void New_Onegin_Swap(void * first, void * second, size_t size)
         size -= sizeof(uint8_t);
     }
 }
+*/

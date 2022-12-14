@@ -7,41 +7,21 @@
 
 #include "../asm_includes/assembler.h"
 #include "../../proc_config.h"
-
-
-//---------------------------------------------------------------------------------------------//
-
-/// @brief Function finds out the size of source file
-/// @param fp is a ptr on source file
-/// @return The csize of file                                       from Onegin
-static unsigned long Get_File_Size(FILE * fp);
-
-//---------------------------------------------------------------------------------------------//
-
-/// @brief Function fimds out the number of strings in file
-/// @param src_file is ptr on src_file_info struct                  from Onegin
-/// @return The nuber of strings
-static unsigned long Get_Line_Count(src_file_info * const src_file);
-
-//-----------------------------------------------------_----------------------------------------//
-
-/// @brief Function makes strings out of source buffer
-/// @param src_file is ptr on src_file_info struct
-/// @return Alloc_Err if making of strings failed, No_Error if it's ok      from Onegin
-static int Make_Strings(src_file_info * const src_file);
+#include "../../architecture.h"
+#include "../Onegin/text_functions.h"
 
 //---------------------------------------------------------------------------------------------//
 
 /// @brief Function skips spaces until it finds out the digit
 /// @param str is ptr on the string
-/// @return Incorrect_Push_Arg if there's error, No_Error if isn't          Checks errors
+/// @return Incorrect_Push_Arg if there's error, No_Error if isn't          
 static int Skip_Space_To_Digit(char ** str);
 
 //---------------------------------------------------------------------------------------------//
 
 /// @brief Function finds out incorrect commands in source file
 /// @param str is ptr on the string 
-/// @param asmbly is ptr in asm_file_info struct                         checks errors
+/// @param asmbly is ptr in asm_file_info struct                         
 /// @param cur_num is a number of current string
 static void Is_Space_Line(char ** str, asm_file_info * const asmbly, const int cur_num);
 
@@ -50,26 +30,26 @@ static void Is_Space_Line(char ** str, asm_file_info * const asmbly, const int c
 /// @brief Function finds out extra arguments of commands
 /// @param str is prt on the string
 /// @param cur_num is a number of current string
-/// @return Extra_Arg if there's error, No_Error if isn't               checks errors
+/// @return Extra_Arg if there's error, No_Error if isn't               
 static int Is_Extra_Arg(char ** str, int cur_num);
 
 //---------------------------------------------------------------------------------------------//
 
 /// @brief Function compares twp strings ignoring letter height
 /// @param str1 is ptr on the first string
-/// @param str2 is ptr on the second string                             important
+/// @param str2 is ptr on the second string                         
 /// @return 0 if strings are equal, another digit if they're not
 static int Stricmp(const char * str1, const char * str2);
 
 //---------------------------------------------------------------------------------------------//\
 
 /// @brief Function workes with argument and adds it to the code array
-/// @param src_file is ptr on src_file_info struct 
+/// @param src_file is ptr on Text_Info struct 
 /// @param asmbly is ptr in asm_file_info struct
 /// @param cur_num_str is a number of current string
 /// @param cmd the value of command
 /// @return the code of argument or Undefined_Arg if argument is incorrect
-static int Get_Arg(src_file_info * const src_file, asm_file_info * const asmbly, int cur_num_str, int cmd);
+static int Get_Arg(Text_Info * const src_file, asm_file_info * const asmbly, int cur_num_str, int cmd);
 
 //---------------------------------------------------------------------------------------------//
 
@@ -85,25 +65,13 @@ static int Is_Label(const char ** str);
 
 //---------------------------------------------------------------------------------------------//
 
-void Asm_Ctor(FILE * input_file, src_file_info * const src_file, asm_file_info * const asmbly)
+void Asm_Ctor(FILE * input_file, Text_Info * const src_file, asm_file_info * const asmbly)
 {
     assert(input_file);
     assert(src_file); // TODO use Onegin
 
-    if ((src_file->symbols_count = Get_File_Size(input_file)) == Reading_File_Err)
+    if (Onegin_Read(src_file, input_file) != 0)
         asmbly->error = Reading_File_Err;
-
-    src_file->buffer= (char *) calloc(src_file->symbols_count + 1, sizeof(char));
-    if (src_file->buffer == nullptr)
-        asmbly->error = Alloc_Err;
-
-    if (fread(src_file->buffer, sizeof(char), src_file->symbols_count, input_file) < src_file->lines_count)
-        asmbly->error = Reading_File_Err;
-
-    src_file->lines_count = Get_Line_Count(src_file) + 1;
-
-    if (Make_Strings(src_file) == Alloc_Err)
-        asmbly->error = Alloc_Err;
 
     asmbly->code_arr = (int *)calloc (2 * src_file->lines_count, sizeof(int));
     if (asmbly->code_arr == nullptr)
@@ -126,7 +94,7 @@ void Asm_Ctor(FILE * input_file, src_file_info * const src_file, asm_file_info *
 #define DEF_CMD(name, number, arg, ...)                                                                         \
     else if (Stricmp(#name, cmd) == 0)                                                                          \
     {                                                                                                           \
-        if (arg)                                                                                                \
+        if (arg == Digit || arg == Reg)                                                                         \
         {                                                                                                       \
             (src_file->pointers[cur_num_str])+=cmd_len;                                                         \
             Get_Arg(src_file, asmbly, cur_num_str, number);                                                     \
@@ -136,13 +104,19 @@ void Asm_Ctor(FILE * input_file, src_file_info * const src_file, asm_file_info *
                 break;                                                                                          \
             }                                                                                                   \
         }                                                                                                       \
+        else if (arg == Label)                                                                                  \
+        {                                                                                                       \
+            asmbly->jumps_index[jump_index++] = asmbly->cmd_num;                                                \
+            asmbly->code_arr[asmbly->cmd_num++] = -1;                                                           \
+            asmbly->code_arr[asmbly->cmd_num++] = -1;                                                           \
+        }                                                                                                       \
         else if (arg == 0)                                                                                      \
         {                                                                                                       \
             asmbly->code_arr[asmbly->cmd_num++] = number;                                                       \
             if (Is_Extra_Arg(&src_file->pointers[cur_num_str], cmd_len) == Extra_Arg)                           \
             {                                                                                                   \
                 asmbly->error = Extra_Arg;                                                                      \
-                fprintf(stderr, "The string |%s| in line %d has an extra argument\n", cur_str, cur_num_str + 1);  \
+                fprintf(stderr, "The string |%s| in line %d has an extra argument\n", cur_str, cur_num_str + 1);\
                 break;                                                                                          \
             }                                                                                                   \
         }                                                                                                       \
@@ -150,7 +124,7 @@ void Asm_Ctor(FILE * input_file, src_file_info * const src_file, asm_file_info *
     }
 //---------------------------------------------------------------------------------------------//
 
-void Fisrt_Asm_Compile(src_file_info * const src_file, asm_file_info * const asmbly)
+void Fisrt_Asm_Compile(Text_Info * const src_file, asm_file_info * const asmbly)
 {
     assert(src_file);
     assert(asmbly);
@@ -160,7 +134,7 @@ void Fisrt_Asm_Compile(src_file_info * const src_file, asm_file_info * const asm
 
     while (cur_num_str < (int) src_file->lines_count)
     {
-        char cmd[DEF_CMD_LEN] = " ";
+        char cmd[DEF_CMD_LEN] = { 0 };
         int cmd_len = 0;
         sscanf(src_file->pointers[cur_num_str], "%s%n", cmd, &cmd_len);
         char * cur_str = src_file->pointers[cur_num_str];
@@ -174,22 +148,6 @@ void Fisrt_Asm_Compile(src_file_info * const src_file, asm_file_info * const asm
             cur_num_str++;
         }
 
-        else if (strchr(cmd, 'j') != nullptr)
-        {
-            asmbly->jumps_index[jump_index++] = asmbly->cmd_num;
-            asmbly->code_arr[asmbly->cmd_num++] = -1;
-            asmbly->code_arr[asmbly->cmd_num++] = -1;   //need to remake
-            cur_num_str++;
-        }
-
-        else if (strchr(cmd, 'c') != nullptr)
-        {
-            asmbly->jumps_index[jump_index++] = asmbly->cmd_num; // need to remake
-            asmbly->code_arr[asmbly->cmd_num++] = -1;
-            asmbly->code_arr[asmbly->cmd_num++] = -1;
-            cur_num_str++;   
-        }
-
         #include "../../cmd.h"
 
         else
@@ -197,7 +155,7 @@ void Fisrt_Asm_Compile(src_file_info * const src_file, asm_file_info * const asm
             Is_Space_Line(&src_file->pointers[cur_num_str], asmbly, cur_num_str);
             if (asmbly->error == Undefined_Cmd)
             {
-                fprintf(stderr, "Error: Incorrect command '%s' in input file in line %d\n", cur_str, cur_num_str + 1);
+                fprintf(stderr, "Error: Incorrect command [%s] in input file in line %d\n", cur_str, cur_num_str + 1);
                 break;
             }
             else
@@ -217,12 +175,12 @@ void Fisrt_Asm_Compile(src_file_info * const src_file, asm_file_info * const asm
         int label = 0;                                                                      \
         sscanf(src_file->pointers[cur_num_str], "%d", &label);                              \
         asmbly->code_arr[asmbly->jumps_index[jump_index++] + 1] = asmbly->labels[label];    \
-        cur_num_str;                                                                        \
+        cur_num_str++;                                                                      \
     }
 
 //---------------------------------------------------------------------------------------------//
 
-void Second_Asm_Compile(src_file_info * const src_file, asm_file_info * const asmbly)
+void Second_Asm_Compile(Text_Info * const src_file, asm_file_info * const asmbly)
 {
     assert(src_file);
     assert(asmbly);
@@ -249,7 +207,7 @@ void Second_Asm_Compile(src_file_info * const src_file, asm_file_info * const as
 
 //---------------------------------------------------------------------------------------------//
 
-static int Get_Arg(src_file_info * const src_file, asm_file_info * const asmbly, int cur_num_str, int cmd)
+static int Get_Arg(Text_Info * const src_file, asm_file_info * const asmbly, int cur_num_str, int cmd)
 {
     assert(src_file);
     assert(asmbly);
@@ -310,16 +268,16 @@ static int Is_Reg(char ** str, asm_file_info * const asmbly)
     sscanf(*str, "%s", reg);
 
     if      (Stricmp(*str, "ax") == 0)
-        return REG_AX;
+        return REG_RAX;
 
     else if (Stricmp(*str, "bx") == 0)
-        return REG_BX;    
+        return REG_RBX;    
     
     else if (Stricmp(*str, "cx") == 0)
-        return REG_CX;
+        return REG_RCX;
     
     else if (Stricmp(*str, "dx") == 0)
-        return REG_DX;
+        return REG_RDX;
 
     else
     {
@@ -331,7 +289,7 @@ static int Is_Reg(char ** str, asm_file_info * const asmbly)
 
 //---------------------------------------------------------------------------------------------//             
 
-void Asm_Dtor(src_file_info * const src_file, asm_file_info * const asmbly, FILE * input_file)
+void Asm_Dtor(Text_Info * const src_file, asm_file_info * const asmbly, FILE * input_file)
 {
     free(src_file->buffer);
     free(src_file->pointers);
@@ -350,59 +308,6 @@ int Check_Cmdline_Arg(int argc)
         fprintf(stderr, "Error: wrong number of command line args: %d\n"
                 "Expected %d\n", argc, 4);
         return Cmd_Line_Arg_Err;
-    }
-    return No_Error;
-}
-
-//---------------------------------------------------------------------------------------------//
-
-static unsigned long Get_File_Size(FILE * fp)
-{
-    struct stat buf = {};
-
-    if (fstat(fileno(fp), &buf) == -1)
-        return Reading_File_Err;
-
-    return (unsigned long) buf.st_size;
-}
-
-//---------------------------------------------------------------------------------------------//
-
-static unsigned long Get_Line_Count(src_file_info * const src_file)
-{
-    assert(src_file);
-
-    unsigned long str_num = 0;
-
-    for (unsigned long ch = 0; ch < src_file->symbols_count; ch++)
-        if (src_file->buffer[ch] == '\n')
-            str_num++;
-            
-    return str_num;
-}
-
-//---------------------------------------------------------------------------------------------//
-
-static int Make_Strings(src_file_info * src_file)
-{
-    assert(src_file);
-
-    char ** Tmp_Mem = (char **)calloc (src_file->lines_count + 1, sizeof(char *));
-    
-    if (Tmp_Mem == nullptr)
-        return Alloc_Err;
-
-    src_file->pointers = Tmp_Mem;
-
-    *(src_file->pointers) = src_file->buffer;
-
-    for (unsigned long ch = 0, cur_str = 1; ch < src_file->symbols_count; ch++)
-    {
-        if (src_file->buffer[ch] == '\n')
-        {
-            src_file->buffer[ch] = '\0';
-            src_file->pointers[cur_str++] = &src_file->buffer[ch + 1];
-        }
     }
     return No_Error;
 }
@@ -493,5 +398,7 @@ static int Is_Label(const char ** str)
             return Label;
         (*str)++;
     }
-    return No_Error;
+    return 0;
 }
+
+

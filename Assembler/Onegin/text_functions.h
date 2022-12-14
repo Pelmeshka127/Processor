@@ -26,18 +26,15 @@ int Direct_Lex_Cmp(const void * s1, const void * s2);
 /// functions compares two strings in reverse alphabetical order
 int Reverse_Lex_Cmp(const void * p1, const void * p2);
 
-/// function checks command lines argument
-int Check_Cmdline_Arg(int argc);
-
 /// function reads input file
-int Onegin_Read(struct Text_Info * Onegin, FILE *);
-
+int Onegin_Read(struct Text_Info * Onegin, FILE * fp);
+/*
 /// functions sorts file using string comporator
 void Onegin_Sort(struct Text_Info * Onegin, int Comp(const void *, const void *));
 
 /// functions sorts file using quick sort with string comporator
 void Onegin_Qsort(struct Text_Info * Onegin, int first, int last, int Comp (const void *, const void *));
-
+*/
 /// function writes strings to the out file 
 void Onegin_Print_To_File(struct Text_Info * Onegin, FILE * fp);
 

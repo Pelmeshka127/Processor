@@ -19,14 +19,17 @@ FLAGS = -D _DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++\
 			   -fsanitize=object-size,return,returns-nonnull-attribute,shift,\
 			   -fsanitize=address,signed-integer-overflow,undefined,unreachable,vla-bound,vptr,
 
-asmtask: main.o assembler.o
-	g++ ./asm_obj/main.o ./asm_obj/assembler.o $(FLAGS) -o assembly
+asmtask: main.o assembler.o text_functions.o
+	g++ ./asm_obj/main.o ./asm_obj/assembler.o ./asm_obj/text_functions.o $(FLAGS) -o assembly
 
 main.o: ./asm_src/main.cpp
 	g++ -c asm_src/main.cpp $(FLAGS) -o asm_obj/main.o
 
 assembler.o: ./asm_src/assembler.cpp
 	g++ -c asm_src/assembler.cpp $(FLAGS) -o asm_obj/assembler.o
+
+text_functions.o:
+	g++ -c ./Onegin/text_functions.cpp $(FLAGS) -o ./asm_obj/text_functions.o
 
 preproc: ./asm_src/assembler.cpp
 	g++ -c asm_src/assembler.cpp $(FLAGS) -E -o asm_obj/preproc.cpp

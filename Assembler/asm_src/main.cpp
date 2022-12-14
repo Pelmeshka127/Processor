@@ -5,10 +5,11 @@
 
 #include "../asm_includes/assembler.h"
 #include "../../proc_config.h"
+#include "../Onegin/text_functions.h"
 
 int main(int argc, char ** argv)
 {
-    src_file_info src_file = {.buffer = nullptr, 0, 0, nullptr};
+    Text_Info src_file = {.buffer = nullptr, .lines_count = 0, .symbols_count = 0, .pointers = nullptr};
 
     asm_file_info asmbly = {DEF_CP, 0, nullptr, nullptr, nullptr, No_Error};
 
@@ -52,6 +53,13 @@ int main(int argc, char ** argv)
     }
 
     Fisrt_Asm_Compile(&src_file, &asmbly);
+    
+    if (asmbly.error != No_Error)
+    {
+        fprintf(stderr, "Building of asm file failed\n");
+        Asm_Dtor(&src_file, &asmbly, input_file);
+        return Asm_Compile_Error;
+    } 
 
     Second_Asm_Compile(&src_file, &asmbly);
 

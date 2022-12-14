@@ -3,9 +3,9 @@
 
 #include "stackconfig.h"
 
-#define CANARY_PROTECT
+#undef CANARY_PROTECT
 
-#define HASH_PROTECT
+#undef HASH_PROTECT
 
 enum MODES {
     UP_MODE = 1,

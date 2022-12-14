@@ -4,6 +4,7 @@
 
 #include "../cpu_includes/cpu.h"
 #include "../../proc_config.h"
+#include "../../architecture.h"
 #include "../Stack/includes/stack.h"
 
 //---------------------------------------------------------------------------------------------//

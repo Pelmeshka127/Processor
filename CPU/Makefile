@@ -28,11 +28,11 @@ main.o: ./cpu_src/main.cpp
 cpu.o: ./cpu_src/cpu.cpp
 	g++ -c ./cpu_src/cpu.cpp $(FLAGS) -o cpu_obj/cpu.o
 
-stack.o: ./Stack/Stack/src/stack.cpp
-	g++ -c ./Stack/Stack/src/stack.cpp $(FLAGS) -o cpu_obj/stack.o
+stack.o: ./Stack/src/stack.cpp
+	g++ -c ./Stack/src/stack.cpp $(FLAGS) -o cpu_obj/stack.o
 
-debug.o: ./Stack/Stack/src/debug.cpp
-	g++ -c ./Stack/Stack/src/debug.cpp $(FLAGS) -o cpu_obj/debug.o
+debug.o: ./Stack/src/debug.cpp
+	g++ -c ./Stack/src/debug.cpp $(FLAGS) -o cpu_obj/debug.o
 
 preproc: ./cpu_src/cpu.cpp
 	g++ -c cpu_src/cpu.cpp $(FLAGS) -E -o cpu_obj/preproc.cpp

@@ -78,7 +78,9 @@ int Stack_Ctor(Stack * const my_stack)
     for (int i = 0; i < (elem_t) my_stack->capacity; i++)
         my_stack->data[i] = Poison;
 
+#ifdef HASH_PROTECT
     Re_Calc_Hash(my_stack);
+#endif
 
     STACK_VERIFY(my_stack);
 
@@ -107,7 +109,9 @@ int Stack_Push(Stack * const my_stack, const int value)
 
     STACK_VERIFY(my_stack);
 
+#ifdef HASH_PROTECT
     Re_Calc_Hash(my_stack);
+#endif
 
     return No_Err;
 }
@@ -139,7 +143,9 @@ elem_t Stack_Pop(Stack * const my_stack)
 
     STACK_VERIFY(my_stack);
 
+#ifdef HASH_PROTECT
     Re_Calc_Hash(my_stack);
+#endif
 
     return Popping_Elem;
 }
@@ -214,7 +220,9 @@ static char * Stack_Recalloc(Stack * const my_stack)
         return nullptr;
     }
 
+#ifdef HASH_PROTECT
     Re_Calc_Hash(my_stack);
+#endif
 
     return add_alloc_mem;
 }

@@ -1,19 +1,17 @@
 push 1
 pop ax
-
-:3
-push ax
+push 2
+pop bx
+push 1
+pop cx
+push bx
+push bx
+mul
+push 4
+push cx
+mul
 push ax
 mul
+sub
 out
-
-push ax
-push 1
-add
-pop ax
-
-push 10
-push ax
-jb :3
-
 hlt

@@ -5,7 +5,7 @@
 
 #include "stack.h"
 
-#define DUMP_DEBUG
+#undef DUMP_DEBUG
 
 /// @brief includes the codes of errors
 enum Err_Codes {

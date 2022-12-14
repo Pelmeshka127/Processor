@@ -5,7 +5,7 @@
 
 #include "../cpu_includes/cpu.h"
 #include "../Stack/includes/stack.h"
-#include "../../proc_config.h"
+#include "../../architecture.h"
 
 int main(void)
 {

@@ -1,14 +1,4 @@
-#define PUSH_STACK(elem)  \
-    Stack_Push(&cpu->stack, elem)
-
-#define POP_STACK   \
-    Stack_Pop(&cpu->stack)
-
-#define PUSH_RET_STACK(elem)    \
-    Stack_Push(&cpu->ret_stack, elem)
-
-#define POP_RET_STACK   \
-    Stack_Pop(&cpu->ret_stack)
+#include "dsl.h"
 
 DEF_CMD(HLT, CMD_HLT, 0, 
 {
@@ -57,7 +47,7 @@ DEF_CMD(MUL, CMD_MUL, 0,
 DEF_CMD(DIV, CMD_DIV, 0,
 {
     int a = POP_STACK;
-    int b = POP_STACK; // div 
+    int b = POP_STACK; // div 0
     int c = b / a;
     PUSH_STACK(c);
 })
@@ -78,7 +68,6 @@ DEF_CMD(CALL, CMD_CALL, Label,
 DEF_CMD(RET, CMD_RET, 0,
 {
     ip = POP_RET_STACK;
-    ip--;
 })
 
 DEF_CMD(JUMP, CMD_JUMP, Label, 

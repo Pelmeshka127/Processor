@@ -1,18 +1,11 @@
 #ifndef ASSEMBLER_H_
 #define ASSEMBLER_H_
 
-#include <stdio.h>
+#include "../Onegin/text_functions.h"
 
 #define TEXT_FILE
 
 #define BIN_FILE
-
-struct src_file_info {
-    char * buffer;
-    unsigned long symbols_count;
-    unsigned long lines_count;
-    char ** pointers;
-};
 
 struct asm_file_info {
     int cp;
@@ -26,32 +19,32 @@ struct asm_file_info {
 //---------------------------------------------------------------------------------------------//
 
 /// @brief Function finds out labels and writes them to the label arr
-/// @param src_file is ptr on src_file_info struct
+/// @param src_file is ptr on Text_Info struct
 /// @param asmbly is ptr on asm_file_info struct
-void Fisrt_Asm_Compile(src_file_info * const src_file, asm_file_info * const asmbly);
+void Fisrt_Asm_Compile(Text_Info * const src_file, asm_file_info * const asmbly);
 
 //---------------------------------------------------------------------------------------------//
 
 /// @brief Function writes down the codes of the comands to the code_array
-/// @param src_file is ptr on src_file_info struct
+/// @param src_file is ptr on Text_Info struct
 /// @param asmbly is ptr on asm_file_info struct
-void Second_Asm_Compile(src_file_info * const src_file, asm_file_info * const asmbly);
+void Second_Asm_Compile(Text_Info * const src_file, asm_file_info * const asmbly);
 
 //---------------------------------------------------------------------------------------------//
 
 /// @brief Function finds out info about source file and allocates dynamic memory
 /// @param fp is pointer on the source file
-/// @param src_file is ptr on src_file_info struct
+/// @param src_file is ptr on Text_Info struct
 /// @return Reading file error if counstruction failed, No_Error if it's ok
-void Asm_Ctor(FILE * fp, src_file_info * const src_file, asm_file_info * const asmbly);
+void Asm_Ctor(FILE * input_file, Text_Info * const src_file, asm_file_info * const asmbly);
 
 //---------------------------------------------------------------------------------------------//
 
 /// @brief Function frees allocated memory and closes files
-/// @param src_file is ptr on src_file_info struct
+/// @param src_file is ptr on Text_Info struct
 /// @param asmbly is ptr on asm_file_info struct
 /// @param input_file is ptr on source file
-void Asm_Dtor(src_file_info * const src_file, asm_file_info * const asmbly, FILE * input_file);
+void Asm_Dtor(Text_Info * const src_file, asm_file_info * const asmbly, FILE * input_file);
 
 //---------------------------------------------------------------------------------------------//
 
