@@ -8,7 +8,10 @@ enum CMD {
     CMD_SUB      = 4,
     CMD_MUL      = 5,
     CMD_DIV      = 6,
-    CMD_OUT      = 9,
+    CMD_SQRT     = 7,
+    CMD_MINUS    = 8,
+    CMD_IN       = 9,
+    CMD_OUT      = 10,
 
     CMD_PUSH_REG = 11,
     CMD_POP_REG  = 12,
@@ -32,6 +35,8 @@ enum Regs {
     REG_RBX = 2,
     REG_RCX = 3,
     REG_RDX = 4,
+    REG_REX = 5,
+    REG_RFX = 6,
 };
 
 enum Erros {
@@ -47,9 +52,14 @@ enum Erros {
     Asm_Compile_Error  = 1 << 19,
     CP_Error           = 1 << 20,
     CPU_Compile_Error  = 1 << 21,
+    Label_Error        = 1 << 22,
 };
 
 enum Args {
+    CMD_MASK   = 0x1F,
+    ARG_IMMED  = 1 << 5,
+    ARG_REG    = 1 << 6,
+    ARG_RAM    = 1 << 7,
     Digit = 1,
     Reg   = 2,
     Label = 3,

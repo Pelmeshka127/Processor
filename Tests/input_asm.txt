@@ -1,0 +1,25 @@
+in
+pop ax
+in
+pop bx
+in
+pop cx
+
+call :desc
+
+hlt
+
+desc:
+push 4
+push ax
+push cx
+mul
+mul
+
+push bx
+push bx
+mul
+
+sub
+out
+ret

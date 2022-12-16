@@ -8,25 +8,26 @@ DEF_CMD(HLT, CMD_HLT, 0,
 
 DEF_CMD(PUSH, CMD_PUSH, Digit, 
 {
-    PUSH_STACK(cpu->code[ip + 1]);
-    ip++;
+    int elem = Get_Push_Arg(cpu, cpu->code[cpu->ip]);
+    PUSH_STACK(elem);
 })
 
 DEF_CMD(PUSH, CMD_PUSH_REG, Reg,
 {
-    PUSH_STACK(cpu->registers[cpu->code[ip+1]]);
-    ip++;
+    PUSH_STACK(cpu->registers[cpu->code[cpu->ip+1]]);
+    cpu->ip++;
 })
 
 DEF_CMD(POP, CMD_POP, Digit, 
 {
-    POP_STACK;
+    int elem = POP_STACK;
+    Get_Pop_Arg(cpu, cpu->code[cpu->ip], elem);
 })
 
 DEF_CMD(POP, CMD_POP_REG, Reg, 
 {
-    cpu->registers[cpu->code[ip+1]] = POP_STACK;
-    ip++;
+    cpu->registers[cpu->code[cpu->ip+1]] = POP_STACK;
+    cpu->ip++;
 })
 
 DEF_CMD(ADD, CMD_ADD, 0, 
@@ -52,6 +53,23 @@ DEF_CMD(DIV, CMD_DIV, 0,
     PUSH_STACK(c);
 })
 
+DEF_CMD(SQRT, CMD_SQRT, 0,
+{
+    PUSH_STACK(sqrt(POP_STACK));
+})
+
+DEF_CMD(MINUS, CMD_MINUS, 0,
+{
+    PUSH_STACK(-1 * POP_STACK);
+})
+
+DEF_CMD(IN, CMD_IN, 0,
+{
+    int value = 0;
+    scanf("%d", &value);
+    PUSH_STACK(value);
+})
+
 DEF_CMD(OUT, CMD_OUT, 0,
 {
     int value = POP_STACK;
@@ -60,84 +78,84 @@ DEF_CMD(OUT, CMD_OUT, 0,
 
 DEF_CMD(CALL, CMD_CALL, Label,
 {
-    PUSH_RET_STACK(ip + 1);
-    ip = cpu->code[ip + 1];
-    ip--;
+    PUSH_RET_STACK(cpu->ip + 1);
+    cpu->ip = cpu->code[cpu->ip + 1];
+    cpu->ip--;
 })
 
 DEF_CMD(RET, CMD_RET, 0,
 {
-    ip = POP_RET_STACK;
+    cpu->ip = POP_RET_STACK;
 })
 
 DEF_CMD(JUMP, CMD_JUMP, Label, 
 {
-    ip = cpu->code[ip + 1];
-    ip--;
+    cpu->ip = cpu->code[cpu->ip + 1];
+    cpu->ip--;
 })  
 
 DEF_CMD(JB, CMD_JB, Label, 
 {
     if (POP_STACK < POP_STACK)
     {
-        ip = cpu->code[ip + 1];
-        ip--;
+        cpu->ip = cpu->code[cpu->ip + 1];
+        cpu->ip--;
     }
     else
-        ip++;
+        cpu->ip++;
 })
 
 DEF_CMD(JBE, CMD_JBE, Label, 
 {
     if (POP_STACK <= POP_STACK)
     {
-        ip = cpu->code[ip + 1];
-        ip--;
+        cpu->ip = cpu->code[cpu->ip + 1];
+        cpu->ip--;
     }
     else 
-        ip++;
+        cpu->ip++;
 })
 
 DEF_CMD(JA, CMD_JA, Label, 
 {
     if (POP_STACK > POP_STACK)
     {
-        ip = cpu->code[ip + 1];
-        ip--;
+        cpu->ip = cpu->code[cpu->ip + 1];
+        cpu->ip--;
     }
     else 
-        ip++;
+        cpu->ip++;
 })
 
 DEF_CMD(JAE, CMD_JAE, Label, 
 {
     if (POP_STACK >= POP_STACK)
     {
-        ip = cpu->code[ip + 1];
-        ip--;
+        cpu->ip = cpu->code[cpu->ip + 1];
+        cpu->ip--;
     }
     else 
-        ip++;
+        cpu->ip++;
 })
 
 DEF_CMD(JE, CMD_JE, Label,
 {
     if (POP_STACK == POP_STACK)
     {
-        ip = cpu->code[ip + 1];
-        ip--;
+        cpu->ip = cpu->code[cpu->ip + 1];
+        cpu->ip--;
     }
     else 
-        ip++;
+        cpu->ip++;
 })
 
 DEF_CMD(JNE, CMD_JNE, Label,
 {
     if (POP_STACK != POP_STACK)
     {
-        ip = cpu->code[ip + 1];
-        ip--;
+        cpu->ip = cpu->code[cpu->ip + 1];
+        cpu->ip--;
     }
     else 
-        ip++;
+        cpu->ip++;
 })

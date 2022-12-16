@@ -1,0 +1,56 @@
+in
+pop ax
+in
+pop bx
+in
+pop cx
+
+call :desc
+
+push dx
+sqrt
+pop dx
+
+call :square
+
+hlt
+
+desc:
+push 4
+push ax
+push cx
+mul
+mul
+
+push bx
+push bx
+mul
+
+sub
+pop dx
+ret
+
+
+square:
+push bx
+minus
+push dx
+minus
+add
+push 2
+push ax
+mul
+div
+out
+
+push bx
+minus
+push dx
+add
+push 2
+push ax
+mul
+div
+out
+
+ret

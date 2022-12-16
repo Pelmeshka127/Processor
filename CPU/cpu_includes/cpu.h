@@ -2,17 +2,20 @@
 #define CPU_H_
 
 #include "../Stack/includes/stack.h"
+#include "../../proc_config.h"
+#include "../../architecture.h"
 
 //---------------------------------------------------------------------------------------------//
 
 /// @brief This struct includes the information about our CPU
 struct cpu_info {
-    int CP;             // The value of CP for checking correct file
     size_t size;        // The size of commands in file
+    int ip;
     int * registers;    // The arrray of registers
-    int * code;         // The array of code which includes commands
+    int * RAM;          // The array of RAM 
+    data_t * code;         // The array of code which includes commands
     Stack stack;        // The struct of Stack
-    Stack ret_stack;         
+    Stack ret_stack;    // The Stack for functions
 };
 
 //---------------------------------------------------------------------------------------------//
@@ -36,6 +39,19 @@ int CPU_Compile(cpu_info * const cpu);
 /// @param cpu is ptr on cpu_info struct
 /// @param src_file is ptr on source file
 void CPU_Dtor(cpu_info * const cpu, FILE * src_file);
+
+/// @brief 
+/// @param cpu 
+/// @param cmd 
+/// @param ip 
+/// @return 
+int Get_Push_Arg(cpu_info * const cpu, int cmd);
+
+/// @brief 
+/// @param cpu 
+/// @param cmd 
+/// @param arg 
+void Get_Pop_Arg(cpu_info * const cpu, int cmd, int arg);
 
 //---------------------------------------------------------------------------------------------//
 

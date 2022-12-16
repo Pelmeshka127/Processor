@@ -5,13 +5,16 @@
 
 #define TEXT_FILE
 
-#define BIN_FILE
+struct Labels {
+    int label_num;
+    char * label_line;
+};
 
 struct asm_file_info {
-    int cp;
     int cmd_num;
     int * code_arr;
-    int * labels;
+    Labels * labels;
+    int label_array_size;
     int * jumps_index;
     int error;
 };
@@ -21,14 +24,14 @@ struct asm_file_info {
 /// @brief Function finds out labels and writes them to the label arr
 /// @param src_file is ptr on Text_Info struct
 /// @param asmbly is ptr on asm_file_info struct
-void Fisrt_Asm_Compile(Text_Info * const src_file, asm_file_info * const asmbly);
+int Fisrt_Asm_Compile(Text_Info * const src_file, asm_file_info * const asmbly);
 
 //---------------------------------------------------------------------------------------------//
 
 /// @brief Function writes down the codes of the comands to the code_array
 /// @param src_file is ptr on Text_Info struct
 /// @param asmbly is ptr on asm_file_info struct
-void Second_Asm_Compile(Text_Info * const src_file, asm_file_info * const asmbly);
+int Second_Asm_Compile(Text_Info * const src_file, asm_file_info * const asmbly);
 
 //---------------------------------------------------------------------------------------------//
 
@@ -36,7 +39,7 @@ void Second_Asm_Compile(Text_Info * const src_file, asm_file_info * const asmbly
 /// @param fp is pointer on the source file
 /// @param src_file is ptr on Text_Info struct
 /// @return Reading file error if counstruction failed, No_Error if it's ok
-void Asm_Ctor(FILE * input_file, Text_Info * const src_file, asm_file_info * const asmbly);
+int Asm_Ctor(FILE * input_file, Text_Info * const src_file, asm_file_info * const asmbly);
 
 //---------------------------------------------------------------------------------------------//
 
@@ -44,7 +47,7 @@ void Asm_Ctor(FILE * input_file, Text_Info * const src_file, asm_file_info * con
 /// @param src_file is ptr on Text_Info struct
 /// @param asmbly is ptr on asm_file_info struct
 /// @param input_file is ptr on source file
-void Asm_Dtor(Text_Info * const src_file, asm_file_info * const asmbly, FILE * input_file);
+int Asm_Dtor(Text_Info * const src_file, asm_file_info * const asmbly, FILE * input_file);
 
 //---------------------------------------------------------------------------------------------//
 

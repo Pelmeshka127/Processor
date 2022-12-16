@@ -28,7 +28,6 @@ int main(void)
 
     if (CPU_Compile(&cpu) != No_Error)
         return CPU_Compile_Error;
-        
 
     CPU_Dtor(&cpu, bin_file);
 
