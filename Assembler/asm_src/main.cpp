@@ -4,17 +4,18 @@
 #include <errno.h>
 
 #include "../asm_includes/assembler.h"
-#include "../../proc_config.h"
-#include "../../architecture.h"
+#include "../../Architecture/proc_config.h"
+#include "../../Architecture/architecture.h"
 #include "../Onegin/text_functions.h"
 
 int main(int argc, char ** argv)
 {
     Text_Info src_file = {.buffer = nullptr, .lines_count = 0, .symbols_count = 0, .pointers = nullptr};
 
-    asm_file_info asmbly = {};
+    asm_file_info asmbly = {.cmd_num = 0, .code_arr = nullptr, .error = No_Error, .jumps_index = nullptr,
+                            .label_array_size = DEF_LABEL_SIZE, .labels = nullptr};
 
-    FILE * input_file = nullptr, * listing_file = nullptr, * bin_file = nullptr;
+    FILE * input_file = nullptr, * bin_file = nullptr;
 
     if (Check_Cmdline_Arg(argc) == Cmd_Line_Arg_Err)
         return Cmd_Line_Arg_Err;
@@ -31,64 +32,32 @@ int main(int argc, char ** argv)
         return Src_File_Err;
     }
 
-#ifdef TEXT_FILE
-
-    if ((listing_file = fopen(argv[3], "w")) == nullptr)
+    if (Asm_Ctor(input_file, &src_file, &asmbly) != No_Error)
     {
-        fprintf(stderr, "Incorrect file %s.\n%s\n", argv[3], strerror(errno));
-        return Src_File_Err;
-    }
-
-#endif
-
-    int d = 0;
-    if ((d = Asm_Ctor(input_file, &src_file, &asmbly)) != No_Error) // TODO use ret value
-    {
-        fprintf(stderr, "Reading %dof input_file failed\n", d);
+        fprintf(stderr, "Reading of input_file failed\n");
         return Reading_File_Err;
     }
     
     if (Fisrt_Asm_Compile(&src_file, &asmbly) != No_Error)
     {
-        fprintf(stderr, "Building of asm file failed\n");
+        fprintf(stderr, "First assembly failed\n");
         Asm_Dtor(&src_file, &asmbly, input_file);
         return Asm_Compile_Error;
     } 
 
-    printf("First is ok\n");
-
-    /*for (int label = 0; label < asmbly.label_array_size; label++)
-    {
-        printf("|%s|; %d\n", asmbly.labels[label].label_line, asmbly.labels[label].label_num);
-    }
-
-    for (int i = 0; i < DEF_LABEL_SIZE; i++)
-        printf("%d\n", asmbly.jumps_index[i]);*/
-
     if (Second_Asm_Compile(&src_file, &asmbly) != No_Error)
     {
-        fprintf(stderr, "Building of asm file failed\n");
+        fprintf(stderr, "Second assembly failed\n");
         Asm_Dtor(&src_file, &asmbly, input_file);
         return Asm_Compile_Error;
     }
 
-    printf("Second is ok\n");
-
-    fwrite(&DEF_CP, sizeof(int), 1, bin_file); // TODO struct Header
-    fwrite(&asmbly.cmd_num, sizeof(int), 1, bin_file);
-    fwrite(asmbly.code_arr, sizeof(int), (unsigned long) asmbly.cmd_num, bin_file);
-
-
-#ifdef TEXT_FILE
-
-    fprintf(listing_file, "%d\n%d\n", DEF_CP, asmbly.cmd_num); // TODO: listing
-
-    for (int cmd = 0; cmd < asmbly.cmd_num; cmd++)
-        fprintf(listing_file, "%d ", asmbly.code_arr[cmd]);
-
-    fclose(listing_file);
-
-#endif
+    if (fwrite(&DEF_CP, sizeof(int), 1, bin_file) < 1)
+        return Writing_Error;
+    if (fwrite(&asmbly.cmd_num, sizeof(int), 1, bin_file) < 1)
+        return Writing_Error;
+    if (fwrite(asmbly.code_arr, sizeof(char), (unsigned long) asmbly.cmd_num, bin_file) < (size_t) asmbly.cmd_num)
+        return Writing_Error;
 
     Asm_Dtor(&src_file, &asmbly, input_file);
 

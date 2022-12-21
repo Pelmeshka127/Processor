@@ -1,0 +1,20 @@
+IN
+POP ax
+IN
+POP bx
+IN
+POP cx
+CALL 12
+HLT
+PUSH 4
+PUSH ax
+PUSH cx
+MUL
+MUL
+PUSH bx
+PUSH bx
+MUL
+SUB
+OUT
+RET
+HLT

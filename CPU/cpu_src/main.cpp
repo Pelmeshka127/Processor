@@ -5,7 +5,7 @@
 
 #include "../cpu_includes/cpu.h"
 #include "../Stack/includes/stack.h"
-#include "../../architecture.h"
+#include "../../Architecture/architecture.h"
 
 int main(void)
 {

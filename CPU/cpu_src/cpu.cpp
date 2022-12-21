@@ -4,8 +4,6 @@
 #include <math.h>
 
 #include "../cpu_includes/cpu.h"
-#include "../../proc_config.h"
-#include "../../architecture.h"
 #include "../Stack/includes/stack.h"
 
 //---------------------------------------------------------------------------------------------//
@@ -29,7 +27,7 @@ int CPU_Ctor(cpu_info * const cpu, FILE * src_file)
     if (CP != DEF_CP)
         return CP_Error;
 
-    cpu->code = (data_t *)calloc (cpu->size, sizeof(int));
+    cpu->code = (data_t *)calloc (cpu->size, sizeof(data_t));
     if (cpu->code == nullptr)
         return Alloc_Err;
     
@@ -70,7 +68,7 @@ int CPU_Compile(cpu_info * const cpu)
     {
         switch (cpu->code[cpu->ip] & CMD_MASK)
         {
-            #include "../../cmd.h"
+            #include "../../Architecture/cmd.h"
 
             default:
             {

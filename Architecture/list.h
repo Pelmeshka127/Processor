@@ -1,5 +1,3 @@
-#include "dsl.h"
-
 DEF_CMD(HLT, CMD_HLT, 0, 
 {
     printf("The end\n");

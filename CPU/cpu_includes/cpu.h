@@ -2,8 +2,8 @@
 #define CPU_H_
 
 #include "../Stack/includes/stack.h"
-#include "../../proc_config.h"
-#include "../../architecture.h"
+#include "../../Architecture/proc_config.h"
+#include "../../Architecture/architecture.h"
 
 //---------------------------------------------------------------------------------------------//
 
@@ -13,7 +13,7 @@ struct cpu_info {
     int ip;
     int * registers;    // The arrray of registers
     int * RAM;          // The array of RAM 
-    data_t * code;         // The array of code which includes commands
+    char * code;         // The array of code which includes commands
     Stack stack;        // The struct of Stack
     Stack ret_stack;    // The Stack for functions
 };

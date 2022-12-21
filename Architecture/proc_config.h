@@ -11,6 +11,6 @@ const int DEF_CP         = 0xABCD; // Definite value of CP for checking file
 
 const int DEF_RAM_SIZE   = 100;    // Definite value of the array of RAM
 
-typedef int data_t;
+typedef char data_t;
 
 #endif

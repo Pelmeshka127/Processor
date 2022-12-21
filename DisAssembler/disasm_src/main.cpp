@@ -4,11 +4,10 @@
 
 
 #include "../disasm_includes/disasm.h"
-#include "../../proc_config.h"
 
 int main(void)
 {
-    disasm_info * disasm = {};
+    disasm_info disasm = {.code = 0, .size = 0};
 
     FILE * src_file = nullptr, * dst_file = nullptr;
 
@@ -24,7 +23,10 @@ int main(void)
         return Src_File_Err;
     }
 
+    if (Disasm_Ctor(&disasm, src_file) != No_Error)
+        return Disasm_Compile_Error;
     
+    Disasm_Compile(&disasm, dst_file);
 
     return 0;
 }

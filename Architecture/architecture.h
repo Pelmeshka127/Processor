@@ -24,8 +24,8 @@ enum CMD {
     CMD_JE       = 26,
     CMD_JNE      = 27,
 
+    CMD_RET      = 30,
     CMD_CALL     = 31,
-    CMD_RET      = 32,
 
     CMD_HLT      = 0,
 };
@@ -53,6 +53,8 @@ enum Erros {
     CP_Error           = 1 << 20,
     CPU_Compile_Error  = 1 << 21,
     Label_Error        = 1 << 22,
+    Writing_Error      = 1 << 23,
+    Disasm_Compile_Error = 1 << 24,
 };
 
 enum Args {

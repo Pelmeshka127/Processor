@@ -2,8 +2,9 @@
 #define ASSEMBLER_H_
 
 #include "../Onegin/text_functions.h"
+#include "../../Architecture/proc_config.h"
 
-#define TEXT_FILE
+#define LISTING
 
 struct Labels {
     int label_num;
@@ -12,7 +13,7 @@ struct Labels {
 
 struct asm_file_info {
     int cmd_num;
-    int * code_arr;
+    data_t * code_arr;
     Labels * labels;
     int label_array_size;
     int * jumps_index;
