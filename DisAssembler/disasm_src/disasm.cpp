@@ -27,9 +27,9 @@ int Disasm_Ctor(disasm_info * const disasm, FILE * src_file)
 
 #define DEF_CMD(name, number, arg, ...)                             \
     case number:                                                    \
-        if (arg == Digit)                                           \
+        if (arg == Digit){                                          \
             fprintf(dst_file, "%s ", #name);                        \
-            Get_Arg(disasm, dst_file, &ip, number);                 \
+            Get_Arg(disasm, dst_file, &ip, number);}                \
         else if (arg == Label)                                      \
             fprintf(dst_file, "%s %d\n", #name, disasm->code[++ip]);\
         else if (arg == 0)                                          \

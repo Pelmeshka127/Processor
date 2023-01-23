@@ -9,6 +9,6 @@ static const size_t MULTIPLIER = 2;
 
 static const size_t MIN_SIZE = 4;
 
-typedef int elem_t;
+typedef double elem_t;
 
 #endif

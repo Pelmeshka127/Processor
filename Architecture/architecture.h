@@ -16,6 +16,11 @@ enum CMD {
     CMD_PUSH_REG = 11,
     CMD_POP_REG  = 12,
 
+    CMD_INF      = 13,
+    CMD_ZERO     = 14,
+
+    CMD_SHOW     = 15,
+
     CMD_JUMP     = 21,
     CMD_JB       = 22,
     CMD_JBE      = 23,
@@ -62,9 +67,9 @@ enum Args {
     ARG_IMMED  = 1 << 5,
     ARG_REG    = 1 << 6,
     ARG_RAM    = 1 << 7,
-    Digit = 1,
-    Reg   = 2,
-    Label = 3,
+    Digit      = 1,
+    Reg        = 2,
+    Label      = 3,
 };
 
 #endif

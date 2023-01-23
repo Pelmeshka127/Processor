@@ -13,7 +13,7 @@ struct cpu_info {
     int ip;
     int * registers;    // The arrray of registers
     int * RAM;          // The array of RAM 
-    char * code;         // The array of code which includes commands
+    data_t * code;         // The array of code which includes commands
     Stack stack;        // The struct of Stack
     Stack ret_stack;    // The Stack for functions
 };

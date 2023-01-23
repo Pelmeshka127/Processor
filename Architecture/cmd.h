@@ -37,9 +37,9 @@ DEF_CMD(MUL, CMD_MUL, 0,
 
 DEF_CMD(DIV, CMD_DIV, 0,
 {
-    int a = POP_STACK;
-    int b = POP_STACK; // div 0
-    int c = b / a;
+    double a = POP_STACK;
+    double b = POP_STACK; // div 0
+    double c = b / a;
     PUSH_STACK(c);
 })
 
@@ -62,8 +62,8 @@ DEF_CMD(IN, CMD_IN, 0,
 
 DEF_CMD(OUT, CMD_OUT, 0,
 {
-    int value = POP_STACK;
-    printf("The result is %d\n", value);
+    elem_t value = POP_STACK;
+    printf("The result is %.2f\n", value);
 })
 
 DEF_CMD(CALL, CMD_CALL, Label,
@@ -148,4 +148,24 @@ DEF_CMD(JNE, CMD_JNE, Label,
     }
     else 
         cpu->ip++;
+})
+
+DEF_CMD(SHOW, CMD_SHOW, 0,
+{
+    for (int i = 0; i < DEF_RAM_SIZE; i++)
+    {
+        if ((i > 0) && (i % 10 == 0))
+            printf("\n");
+        printf("%d ", cpu->RAM[i]);
+    }
+})
+
+DEF_CMD(INF, CMD_INF, 0,
+{
+    printf("Inf roots\n");
+})
+
+DEF_CMD(ZERO, CMD_ZERO, 0,
+{
+    printf("No roots\n");
 })

@@ -90,7 +90,7 @@ void Stack_Dump(Stack * const my_stack, const char * const File, const char * co
     printf("The capasity of stack is %zu. The size of stack is %zu\n", my_stack->capacity, my_stack->size);
     
     for (int i = 0; i < my_stack->capacity; i++)
-        printf("The [%d] elem of data is %d.\n", i, my_stack->data[i]);
+        printf("The [%d] elem of data is %.2f.\n", i, my_stack->data[i]);
 #endif
 }
 

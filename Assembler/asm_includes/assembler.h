@@ -6,6 +6,14 @@
 
 #define LISTING
 
+#ifdef LISTING
+
+static FILE * listing = nullptr;
+
+static const char * const list_file_name = "listing.txt";
+
+#endif
+
 struct Labels {
     int label_num;
     char * label_line;
@@ -56,6 +64,14 @@ int Asm_Dtor(Text_Info * const src_file, asm_file_info * const asmbly, FILE * in
 /// @param argc is a count of arguments
 /// @return Cmd_Line_Error if there isn't correct number of arguments, No_Error if it's ok
 int Check_Cmdline_Arg(int argc);
+
+//---------------------------------------------------------------------------------------------//
+
+int List_Ctor();
+
+int List_Dtor(Text_Info * const list_info);
+
+int Make_Listing(Text_Info * const list_info, asm_file_info * const asmbly);
 
 //---------------------------------------------------------------------------------------------//
 

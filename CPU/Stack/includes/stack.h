@@ -72,7 +72,7 @@ int Stack_Ctor(Stack * const my_stack);
 /// @param my_stack is ptr on struct Stack
 /// @param n is an element that will be pushed into the stack
 /// @return Alloc_Err if calloc fell down or No_Error if it's OK
-int Stack_Push(Stack * const my_stack, const int value);
+int Stack_Push(Stack * const my_stack, const elem_t value);
 
 //---------------------------------------------------------------------------------------------//
 

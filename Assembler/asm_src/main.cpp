@@ -59,7 +59,25 @@ int main(int argc, char ** argv)
     if (fwrite(asmbly.code_arr, sizeof(char), (unsigned long) asmbly.cmd_num, bin_file) < (size_t) asmbly.cmd_num)
         return Writing_Error;
 
-    Asm_Dtor(&src_file, &asmbly, input_file);
+#ifdef LISTING
+    if (List_Ctor() == Reading_File_Err)
+        return Reading_File_Err;
+    
+    Text_Info list_info = {};
+
+    fseek(input_file, 0L, SEEK_SET);
+
+    if (Onegin_Read(&list_info, input_file) != 0)
+        return Reading_File_Err;
+    
+    Make_Listing(&list_info, &asmbly);
+
+    if (List_Dtor(&list_info) == Reading_File_Err)
+        return Reading_File_Err;
+#endif
+
+    if (Asm_Dtor(&src_file, &asmbly, input_file) == Reading_File_Err)
+        return Reading_File_Err;
 
     return 0;
 }

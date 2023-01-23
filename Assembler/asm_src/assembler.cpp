@@ -9,24 +9,6 @@
 #include "../../Architecture/architecture.h"
 #include "../Onegin/text_functions.h"
 
-static int Write_Label_To_List(int number, char * cur_str);
-
-static int Write_Cmd_To_List(int number);
-
-//---------------------------------------------------------------------------------------------//
-
-#ifdef LISTING
-
-static FILE * listing = nullptr;
-
-static const char * const list_file_name = "listing.txt";
-
-static int List_Ctor();
-
-static int List_Dtor();
-
-#endif
-
 //---------------------------------------------------------------------------------------------//
 
 /// @brief Function finds out labels in the src file and writes down it to the labels array
@@ -129,6 +111,8 @@ static int Make_Common_Arg(Text_Info * const src_file, asm_file_info * const asm
 /// @return The code of register or 0 if there's error
 static int Is_Reg(char ** str, asm_file_info * const asmbly);
 
+//---------------------------------------------------------------------------------------------/
+
 //---------------------------------------------------------------------------------------------//
 
 int Asm_Ctor(FILE * input_file, Text_Info * const src_file, asm_file_info * const asmbly)
@@ -139,7 +123,7 @@ int Asm_Ctor(FILE * input_file, Text_Info * const src_file, asm_file_info * cons
     if (Onegin_Read(src_file, input_file) != 0)
         return Reading_File_Err;
 
-    asmbly->code_arr = (char *)calloc (2 * src_file->lines_count, sizeof(int));
+    asmbly->code_arr = (data_t *)calloc (2 * src_file->lines_count, sizeof(int));
     if (asmbly->code_arr == nullptr)
         return Alloc_Err;
 
@@ -156,11 +140,6 @@ int Asm_Ctor(FILE * input_file, Text_Info * const src_file, asm_file_info * cons
         asmbly->labels[label].label_num = -1;
         asmbly->labels[label].label_line = nullptr;
     }
-
-#ifdef LISTING
-    if (List_Ctor() == Reading_File_Err)
-        return Reading_File_Err;
-#endif
 
     return No_Error;
 }
@@ -182,9 +161,8 @@ int Asm_Ctor(FILE * input_file, Text_Info * const src_file, asm_file_info * cons
         else if (arg == Label)                                                                                  \
         {                                                                                                       \
             asmbly->jumps_index[jump_index++] = asmbly->cmd_num;                                                \
-            asmbly->code_arr[asmbly->cmd_num++] = -1;                                                           \
-            asmbly->code_arr[asmbly->cmd_num++] = -1;                                                           \
-            Write_Label_To_List(number, src_file->pointers[cur_num_str]);                                       \
+            asmbly->code_arr[asmbly->cmd_num++] = 0;                                                           \
+            asmbly->code_arr[asmbly->cmd_num++] = 0;                                                           \
         }                                                                                                       \
         else if (arg == 0)                                                                                      \
         {                                                                                                       \
@@ -195,7 +173,6 @@ int Asm_Ctor(FILE * input_file, Text_Info * const src_file, asm_file_info * cons
                 fprintf(stderr, "The string |%s| in line %d has an extra argument\n", cur_str, cur_num_str + 1);\
                 break;                                                                                          \
             }                                                                                                   \
-            Write_Cmd_To_List(number);                                                                          \
         }                                                                                                       \
         cur_num_str++;                                                                                          \
     }
@@ -216,9 +193,6 @@ int Fisrt_Asm_Compile(Text_Info * const src_file, asm_file_info * const asmbly)
         int cmd_len = 0;
         sscanf(src_file->pointers[cur_num_str], "%s%n", cmd, &cmd_len);
         char * cur_str = src_file->pointers[cur_num_str];
-    #ifdef LISTING
-        fprintf(listing, "\n%04d     %-12s     ", asmbly->cmd_num, src_file->pointers[cur_num_str]);
-    #endif
     
         if (strchr(cmd, ':') != nullptr)
         {
@@ -347,11 +321,6 @@ int Asm_Dtor(Text_Info * const src_file, asm_file_info * const asmbly, FILE * in
     if (fclose(input_file) == false)
         return Reading_File_Err;
 
-#ifdef LISTING
-    if (List_Dtor() == Reading_File_Err)
-        return Reading_File_Err;
-#endif
-
     return No_Error;
 }
 
@@ -460,10 +429,6 @@ static int Find_Labels(Text_Info * const src_file, asm_file_info * const asmbly,
     asmbly->labels[*label_index].label_line = cur_label;
     asmbly->labels[*label_index].label_num  = asmbly->cmd_num;
     *label_index+=1;
-    
-#ifdef LISTING
-    fprintf(listing, "%02d", asmbly->cmd_num);
-#endif
 
     return No_Error;
 }
@@ -499,7 +464,7 @@ static data_t Set_Labels(char * cur_str, asm_file_info * const asmbly)
             return (data_t) asmbly->labels[label].label_num;
     }
 
-    return -1;
+    return 0;
 }
 
 //---------------------------------------------------------------------------------------------//
@@ -570,12 +535,9 @@ static int Make_Ram_Arg(Text_Info * const src_file, asm_file_info * const asmbly
             return Undefined_Arg;
 
         cmd = cmd | ARG_IMMED | ARG_REG;
-        asmbly->code_arr[asmbly->cmd_num++] = cmd;
-        asmbly->code_arr[asmbly->cmd_num++] = immed_arg;
-        asmbly->code_arr[asmbly->cmd_num++] = reg;
-    #ifdef LISTING
-        fprintf(listing, "%02d [%02d + %02d]",  cmd, immed_arg, reg);
-    #endif
+        asmbly->code_arr[asmbly->cmd_num++] = (data_t) cmd;
+        asmbly->code_arr[asmbly->cmd_num++] = (data_t) immed_arg;
+        asmbly->code_arr[asmbly->cmd_num++] = (data_t) reg;
     }
 
     else
@@ -583,11 +545,8 @@ static int Make_Ram_Arg(Text_Info * const src_file, asm_file_info * const asmbly
         if (sscanf(cur_str, "%d", &immed_arg))
         {
             cmd |= ARG_IMMED;
-            asmbly->code_arr[asmbly->cmd_num++] = cmd;
-            asmbly->code_arr[asmbly->cmd_num++] = immed_arg;
-    #ifdef LISTING
-        fprintf(listing, "%02d [%02d]",  cmd, immed_arg);
-    #endif
+            asmbly->code_arr[asmbly->cmd_num++] = (data_t) cmd;
+            asmbly->code_arr[asmbly->cmd_num++] = (data_t) immed_arg;
         }
         else if (sscanf(cur_str, "%s", reg_arg))
         {
@@ -599,11 +558,8 @@ static int Make_Ram_Arg(Text_Info * const src_file, asm_file_info * const asmbly
                 return Undefined_Arg;
 
             cmd |= ARG_REG;
-            asmbly->code_arr[asmbly->cmd_num++] = cmd;
-            asmbly->code_arr[asmbly->cmd_num++] = reg;
-    #ifdef LISTING
-        fprintf(listing, "%02d [%02d]",  cmd, reg);
-    #endif
+            asmbly->code_arr[asmbly->cmd_num++] = (data_t) cmd;
+            asmbly->code_arr[asmbly->cmd_num++] = (data_t) reg;
         }
         else
             return Undefined_Arg;
@@ -629,22 +585,16 @@ static int Make_Common_Arg(Text_Info * const src_file, asm_file_info * const asm
     if (reg != 0)
     {
         cmd |= ARG_REG;
-        asmbly->code_arr[asmbly->cmd_num++] = cmd;
-        asmbly->code_arr[asmbly->cmd_num++] = reg;
-    #ifdef LISTING
-        fprintf(listing, "%02d %02d",  cmd, reg);
-    #endif
+        asmbly->code_arr[asmbly->cmd_num++] = (data_t) cmd;
+        asmbly->code_arr[asmbly->cmd_num++] = (data_t) reg;
         return Reg;
     }
 
     sscanf(src_file->pointers[cur_num_str], "%d", &arg);
 
     cmd |= ARG_IMMED;
-    asmbly->code_arr[asmbly->cmd_num++] = cmd;
-    asmbly->code_arr[asmbly->cmd_num++] = arg;
-#ifdef LISTING
-    fprintf(listing, "%02d %02d",  cmd, arg);
-#endif
+    asmbly->code_arr[asmbly->cmd_num++] = (data_t) cmd;
+    asmbly->code_arr[asmbly->cmd_num++] = (data_t) arg;
 
     return Digit;
 }
@@ -653,7 +603,7 @@ static int Make_Common_Arg(Text_Info * const src_file, asm_file_info * const asm
 
 #ifdef LISTING
 
-static int List_Ctor()
+int List_Ctor()
 {
     listing = fopen(list_file_name, "w");
 
@@ -663,32 +613,69 @@ static int List_Ctor()
     return No_Error;
 }
 
-static int List_Dtor()
+//---------------------------------------------------------------------------------------------//
+
+#define DEF_CMD(name, number, arg, ...)         \
+    else if (Stricmp(#name, cmd) == 0)            \
+    {                                           \
+        if (arg == 0) {                           \
+            fprintf(listing, "\n%04d      %04d    %--25s    %02d", cur_num_str, cmd_num, cur_str, asmbly->code_arr[cmd_num]);  \
+            cmd_num++;}                          \
+        else if (arg == Label) {                               \
+            fprintf(listing, "\n%04d      %04d    %--25s    %02d    %02d",\
+            cur_num_str, cmd_num, cur_str, asmbly->code_arr[cmd_num], asmbly->code_arr[cmd_num+1]);\
+            cmd_num+=2; }\
+        else if (arg == Digit) {             \
+            fprintf(listing, "\n%04d      %04d    %--25s    %02d    %02d",\
+            cur_num_str, cmd_num, cur_str, asmbly->code_arr[cmd_num], asmbly->code_arr[cmd_num+1]);\
+            cmd_num+=2;}\
+    }
+
+//---------------------------------------------------------------------------------------------//
+
+int Make_Listing(Text_Info * const list_file, asm_file_info * const asmbly)
+{
+    assert(list_file);
+    assert(asmbly);
+
+    int cur_num_str = 0;
+    int cmd_num = 0;
+
+    fprintf(listing, "Line     Addres   Text                         Code\n");
+
+    while (cur_num_str < list_file->lines_count)
+    {
+        char cmd[DEF_CMD_LEN] = { 0 };
+        int cmd_len = 0;
+        sscanf(list_file->pointers[cur_num_str], "%s%n", cmd, &cmd_len);
+        char * cur_str = list_file->pointers[cur_num_str];
+                
+        if (strchr(cmd, ':') != nullptr)
+            fprintf(listing, "\n%04d      %04d    %--25s    %02d", cur_num_str, cmd_num, list_file->pointers[cur_num_str], cmd_num);
+
+        #include "../../Architecture/cmd.h"
+
+        else
+            fprintf(listing, "\n%04d      %04d %--25s", cur_num_str, cmd_num, list_file->pointers[cur_num_str]);
+
+        cur_num_str++;
+    }
+    return No_Error;
+}
+
+//---------------------------------------------------------------------------------------------//
+
+int List_Dtor(Text_Info * const list_info)
 {
     if (fclose(listing) == false)
         return Reading_File_Err;
     
+    free(list_info->buffer);
+    free(list_info->pointers);
+
     return No_Error;
 }
 
-static int Write_Label_To_List(int number, char * cur_str)
-{
-    assert(cur_str);
-
-    #ifdef LISTING
-        fprintf(listing, "%02d %s ", number, cur_str);
-    #endif
-
-    return 0;
-}
-
-static int Write_Cmd_To_List(int number)
-{
-    #ifdef LISTING
-        fprintf(listing, "%02d", number);
-    #endif
-
-    return 0;
-}
+//---------------------------------------------------------------------------------------------//
 
 #endif

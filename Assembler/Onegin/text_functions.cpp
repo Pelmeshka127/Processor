@@ -23,14 +23,6 @@ static unsigned long Get_Line_Count(struct Text_Info * Onegin);
 /// function make strings from input file
 static int Make_Strings(struct Text_Info * Onegin);
 
-/*
-/// function swaps strings
-static void Onegin_Swap(struct Text_Info * Onegin, int i_elem, int j_elem);
-
-/// function swaps strings
-static void New_Onegin_Swap(void * first, void * second, size_t size);
-*/
-
 int Direct_Lex_Cmp(const void * p1, const void * p2)
 {
     char * str1 = * (char **) p1;
@@ -113,46 +105,6 @@ int Onegin_Read(struct Text_Info * Onegin, FILE * input_file)
 
     return 0;
 }
-
-/*
-void Onegin_Sort(struct Text_Info * Onegin, int Comporator(const void *, const void *))
-{
-    for (int i = 0; i < Onegin->lines_count - 1; i++)
-        for (int j = i + 1; j < Onegin->lines_count; j++)
-            if (Comporator(&Onegin->pointers[i], &Onegin->pointers[j]) > 0)
-                Onegin_Swap(Onegin, i, j);
-}
-
-
-void Onegin_Qsort(struct Text_Info * Onegin, int first, int last, int Comporator (const void *, const void *))
-{   
-    if (first < last)
-    {
-        int left = first, right = last;
-
-        char * middle = Onegin->pointers[(left + right) / 2];
-
-        do
-        {
-            while (Comporator(&Onegin->pointers[left], &middle) < 0)
-                left++;
-
-            while (Comporator(&Onegin->pointers[right], &middle) > 0) 
-                right--;
-
-            if (left <= right)
-            {
-                New_Onegin_Swap(&Onegin->pointers[left], &Onegin->pointers[right], sizeof(char *));
-                left++;
-                right--;
-            }
-        } while (left <= right);
-
-        Onegin_Qsort(Onegin, first, right, Comporator);
-        Onegin_Qsort(Onegin, left, last, Comporator);
-    }
-}
-*/
 
 void Onegin_Print_To_File(struct Text_Info * Onegin, FILE * fp)
 {
@@ -237,85 +189,3 @@ static int Make_Strings(Text_Info * const Onegin)
     }
     return 0;
 }
-
-//---------------------------------------------------------------------------------------------//
-
-/*
-
-static void Onegin_Swap(struct Text_Info * Onegin, int i_elem, int j_elem)
-{
-    char * Temp = Onegin->pointers[i_elem];
-
-    Onegin->pointers[i_elem] = Onegin->pointers[j_elem];
-
-    Onegin->pointers[j_elem] = Temp;
-}
-
-
-
-static void New_Onegin_Swap(void * first, void * second, size_t size)
-{
-    char * first_ptr = (char *) first;
-    char * second_ptr = (char *) second;
-
-    while (size >= sizeof(uint64_t))
-    {
-        uint64_t temp = *((uint64_t *) first_ptr);
-
-        *((uint64_t *) first_ptr) = *((uint64_t *) second_ptr);
-
-        *((uint64_t *) second_ptr) = temp;
-
-        first_ptr += sizeof(uint64_t);
-
-        second_ptr += sizeof(uint64_t);
-
-        size -= sizeof(uint64_t);
-    }
-
-    while (size >= sizeof(uint32_t))
-    {
-        uint32_t temp = *((uint32_t *) first_ptr);
-
-        *((uint32_t *) first_ptr) = *((uint32_t *) second_ptr);
-
-        *((uint32_t *) second_ptr) = temp;
-
-        first_ptr += sizeof(uint32_t);
-
-        second_ptr += sizeof(uint32_t);
-
-        size -= sizeof(uint32_t);
-    }
-
-    while (size >= sizeof(uint16_t))
-    {
-        uint16_t temp = *((uint16_t *) first_ptr);
-
-        *((uint16_t *) first_ptr) = *((uint16_t *) second_ptr);
-
-        *((uint16_t *) second_ptr) = temp;
-
-        first_ptr += sizeof(uint16_t);
-
-        second_ptr += sizeof(uint16_t);
-
-        size -= sizeof(uint16_t);
-    }
-
-    while (size >= sizeof(uint8_t))
-    {
-        uint8_t temp = *((uint8_t *) first_ptr);
-
-        *((uint8_t *) first_ptr) = *((uint8_t *) second_ptr);
-
-        *((uint8_t *) second_ptr) = temp;
-
-        first_ptr += sizeof(uint8_t);
-
-        second_ptr += sizeof(uint8_t);
-
-        size -= sizeof(uint8_t);
-    }
-}
-*/

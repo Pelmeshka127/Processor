@@ -93,7 +93,7 @@ int Stack_Ctor(Stack * const my_stack)
 
 //---------------------------------------------------------------------------------------------//
 
-int Stack_Push(Stack * const my_stack, const int value)
+int Stack_Push(Stack * const my_stack, const elem_t value)
 {
     assert(my_stack);
 
