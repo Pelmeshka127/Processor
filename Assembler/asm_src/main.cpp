@@ -56,7 +56,7 @@ int main(int argc, char ** argv)
         return Writing_Error;
     if (fwrite(&asmbly.cmd_num, sizeof(int), 1, bin_file) < 1)
         return Writing_Error;
-    if (fwrite(asmbly.code_arr, sizeof(char), (unsigned long) asmbly.cmd_num, bin_file) < (size_t) asmbly.cmd_num)
+    if (fwrite(asmbly.code_arr, sizeof(data_t), (unsigned long) asmbly.cmd_num, bin_file) < (size_t) asmbly.cmd_num)
         return Writing_Error;
 
 #ifdef LISTING

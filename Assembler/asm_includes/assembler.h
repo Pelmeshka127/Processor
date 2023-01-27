@@ -67,11 +67,15 @@ int Check_Cmdline_Arg(int argc);
 
 //---------------------------------------------------------------------------------------------//
 
+#ifdef LISTING
+
 int List_Ctor();
 
 int List_Dtor(Text_Info * const list_info);
 
 int Make_Listing(Text_Info * const list_info, asm_file_info * const asmbly);
+
+#endif
 
 //---------------------------------------------------------------------------------------------//
 

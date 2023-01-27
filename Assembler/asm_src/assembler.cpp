@@ -283,23 +283,8 @@ static int Is_Reg(char ** str, asm_file_info * const asmbly)
 
     sscanf(*str, "%s", reg);
 
-    if      (Stricmp(*str, "ax") == 0)
-        return REG_RAX;
-
-    else if (Stricmp(*str, "bx") == 0)
-        return REG_RBX;    
-    
-    else if (Stricmp(*str, "cx") == 0)
-        return REG_RCX;
-    
-    else if (Stricmp(*str, "dx") == 0)
-        return REG_RDX;
-    
-    else if (Stricmp(*str, "ex") == 0)
-        return REG_REX;
-    
-    else if (Stricmp(*str, "fx") == 0)
-        return REG_RFX;
+    if (strlen(*str) == 2 && (*str)[1] == 'x' && (*str)[0] >= 'a' && (*str)[0] <= 'z')
+        return *str[0] - 'a' + 1;
 
     else
     {
@@ -601,6 +586,24 @@ static int Make_Common_Arg(Text_Info * const src_file, asm_file_info * const asm
 
 //---------------------------------------------------------------------------------------------//
 
+#define DEF_CMD(name, number, arg, ...)         \
+    else if (Stricmp(#name, cmd) == 0)            \
+    {                                           \
+        if (arg == 0) {                           \
+            fprintf(listing, "\n%04d      %04d    %-25s    %02d", cur_num_str, cmd_num, cur_str, asmbly->code_arr[cmd_num]);  \
+            cmd_num++;}                          \
+        else if (arg == Label) {                               \
+            fprintf(listing, "\n%04d      %04d    %-25s    %02d    %02d",\
+            cur_num_str, cmd_num, cur_str, asmbly->code_arr[cmd_num], asmbly->code_arr[cmd_num+1]);\
+            cmd_num+=2; }\
+        else if (arg == Digit) {             \
+            fprintf(listing, "\n%04d      %04d    %-25s    %02d    %02d",\
+            cur_num_str, cmd_num, cur_str, asmbly->code_arr[cmd_num], asmbly->code_arr[cmd_num+1]);\
+            cmd_num+=2;}\
+    }
+
+//---------------------------------------------------------------------------------------------//
+
 #ifdef LISTING
 
 int List_Ctor()
@@ -612,24 +615,6 @@ int List_Ctor()
 
     return No_Error;
 }
-
-//---------------------------------------------------------------------------------------------//
-
-#define DEF_CMD(name, number, arg, ...)         \
-    else if (Stricmp(#name, cmd) == 0)            \
-    {                                           \
-        if (arg == 0) {                           \
-            fprintf(listing, "\n%04d      %04d    %--25s    %02d", cur_num_str, cmd_num, cur_str, asmbly->code_arr[cmd_num]);  \
-            cmd_num++;}                          \
-        else if (arg == Label) {                               \
-            fprintf(listing, "\n%04d      %04d    %--25s    %02d    %02d",\
-            cur_num_str, cmd_num, cur_str, asmbly->code_arr[cmd_num], asmbly->code_arr[cmd_num+1]);\
-            cmd_num+=2; }\
-        else if (arg == Digit) {             \
-            fprintf(listing, "\n%04d      %04d    %--25s    %02d    %02d",\
-            cur_num_str, cmd_num, cur_str, asmbly->code_arr[cmd_num], asmbly->code_arr[cmd_num+1]);\
-            cmd_num+=2;}\
-    }
 
 //---------------------------------------------------------------------------------------------//
 
@@ -651,12 +636,12 @@ int Make_Listing(Text_Info * const list_file, asm_file_info * const asmbly)
         char * cur_str = list_file->pointers[cur_num_str];
                 
         if (strchr(cmd, ':') != nullptr)
-            fprintf(listing, "\n%04d      %04d    %--25s    %02d", cur_num_str, cmd_num, list_file->pointers[cur_num_str], cmd_num);
+            fprintf(listing, "\n%04d      %04d    %-25s    %02d", cur_num_str, cmd_num, list_file->pointers[cur_num_str], cmd_num);
 
         #include "../../Architecture/cmd.h"
 
         else
-            fprintf(listing, "\n%04d      %04d %--25s", cur_num_str, cmd_num, list_file->pointers[cur_num_str]);
+            fprintf(listing, "\n%04d      %04d %-25s", cur_num_str, cmd_num, list_file->pointers[cur_num_str]);
 
         cur_num_str++;
     }
@@ -676,6 +661,6 @@ int List_Dtor(Text_Info * const list_info)
     return No_Error;
 }
 
-//---------------------------------------------------------------------------------------------//
-
 #endif
+
+//---------------------------------------------------------------------------------------------//

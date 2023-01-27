@@ -28,5 +28,8 @@ int main(void)
     
     Disasm_Compile(&disasm, dst_file);
 
+    if (Disasm_Dtor(&disasm, dst_file) == Reading_File_Err)
+        return Reading_File_Err;
+
     return 0;
 }

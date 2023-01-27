@@ -4,6 +4,8 @@
 
 static void Get_Arg(disasm_info * const disasm, FILE * dst_file, int * ip, int number);
 
+//---------------------------------------------------------------------------------------------//
+
 int Disasm_Ctor(disasm_info * const disasm, FILE * src_file)
 {
     assert(disasm);
@@ -24,6 +26,7 @@ int Disasm_Ctor(disasm_info * const disasm, FILE * src_file)
     return No_Error;
 }
 
+//---------------------------------------------------------------------------------------------//
 
 #define DEF_CMD(name, number, arg, ...)                             \
     case number:                                                    \
@@ -35,6 +38,8 @@ int Disasm_Ctor(disasm_info * const disasm, FILE * src_file)
         else if (arg == 0)                                          \
             fprintf(dst_file, "%s\n", #name);                       \
         break;
+
+//---------------------------------------------------------------------------------------------//
 
 int Disasm_Compile(disasm_info * const disasm, FILE * dst_file)
 {
@@ -55,6 +60,8 @@ int Disasm_Compile(disasm_info * const disasm, FILE * dst_file)
     return No_Error;
 }
 
+//---------------------------------------------------------------------------------------------//
+
 static void Get_Arg(disasm_info * const disasm, FILE * dst_file, int * ip, int number)
 {
     assert(disasm);
@@ -63,14 +70,14 @@ static void Get_Arg(disasm_info * const disasm, FILE * dst_file, int * ip, int n
     {
         *ip+=1;
         fprintf(dst_file, "[");
-        if (disasm->code[*ip] & ARG_IMMED && disasm->code[*ip] & ARG_REG)
+        if (disasm->code[*ip-1] & ARG_IMMED && disasm->code[*ip-1] & ARG_REG)
         {
             fprintf(dst_file, "%d+%cx]\n", disasm->code[*ip], disasm->code[*ip+1] + 96);
             *ip+=1;
         }
-        else if (disasm->code[*ip] & ARG_IMMED)
+        else if (disasm->code[*ip-1] & ARG_IMMED)
             fprintf(dst_file, "%d]\n", disasm->code[*ip]);
-        else if (disasm->code[*ip] & ARG_REG)
+        else if (disasm->code[*ip-1] & ARG_REG)
             fprintf(dst_file, "%cx]\n", disasm->code[*ip] + 96);
     }
 
@@ -94,3 +101,14 @@ static void Get_Arg(disasm_info * const disasm, FILE * dst_file, int * ip, int n
     else
         fprintf(stderr, "Undefined arg %d\n", disasm->code[*ip]);
 }
+
+//---------------------------------------------------------------------------------------------//
+
+int Disasm_Dtor(disasm_info * const disasm, FILE * dst_file)
+{
+    if (fclose(dst_file) == false)
+        return Reading_File_Err;
+    free(disasm->code);
+}
+
+//---------------------------------------------------------------------------------------------//

@@ -5,12 +5,12 @@ const int DEF_CMD_LEN    = 20;     // Definite length of each command from sourc
 
 const int DEF_LABEL_SIZE = 20;     // Definite size of the array of labels
 
-const int DEF_REG_SIZE   = 10;      // Definite size of the array of registers
+const int DEF_REG_SIZE   = 26;      // Definite size of the array of registers
 
 const int DEF_CP         = 0xABCD; // Definite value of CP for checking file
 
-const int DEF_RAM_SIZE   = 100;    // Definite value of the array of RAM
+const int DEF_RAM_SIZE   = 1800;    // Definite value of the array of RAM
 
-typedef unsigned char data_t;
+typedef int data_t;
 
 #endif

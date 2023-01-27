@@ -60,6 +60,12 @@ DEF_CMD(IN, CMD_IN, 0,
     PUSH_STACK(value);
 })
 
+DEF_CMD(POW, CMD_POW, 0,
+{
+    elem_t value = POP_STACK;
+    PUSH_STACK(value * value);
+})
+
 DEF_CMD(OUT, CMD_OUT, 0,
 {
     elem_t value = POP_STACK;
@@ -150,14 +156,18 @@ DEF_CMD(JNE, CMD_JNE, Label,
         cpu->ip++;
 })
 
-DEF_CMD(SHOW, CMD_SHOW, 0,
+DEF_CMD(RAM, CMD_RAM, 0,
 {
     for (int i = 0; i < DEF_RAM_SIZE; i++)
     {
-        if ((i > 0) && (i % 10 == 0))
+        if (i % 60 == 0)
             printf("\n");
-        printf("%d ", cpu->RAM[i]);
+        if (cpu->RAM[i] == 1)
+            printf("o ");
+        if (cpu->RAM[i] == 0)
+            printf("- ");
     }
+    printf("\n");
 })
 
 DEF_CMD(INF, CMD_INF, 0,
@@ -168,4 +178,21 @@ DEF_CMD(INF, CMD_INF, 0,
 DEF_CMD(ZERO, CMD_ZERO, 0,
 {
     printf("No roots\n");
+})
+
+DEF_CMD(CIRCLE, CMD_CIRCLE, 0,
+{
+    FILE * fp = nullptr;
+    fp = fopen("..//Tests/circle_show.txt", "w");
+    for (int i = 0; i < DEF_RAM_SIZE; i++)
+    {
+        if (i % 60 == 0)
+            fprintf(fp, "\n");
+        if (cpu->RAM[i] == 1)
+            fprintf(fp, "0 ");
+        if (cpu->RAM[i] == 0)
+            fprintf(fp, "- ");
+    }
+    fprintf(fp, "\n");
+    fclose(fp);
 })

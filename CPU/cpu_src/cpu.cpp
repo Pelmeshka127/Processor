@@ -36,7 +36,7 @@ int CPU_Ctor(cpu_info * const cpu, FILE * src_file)
         return Alloc_Err;
 
     cpu->RAM = (int *)calloc (DEF_RAM_SIZE, sizeof(int));
-    if (cpu->registers == nullptr)
+    if (cpu->RAM == nullptr)
         return Alloc_Err;
 
     fread(cpu->code, sizeof(data_t), cpu->size, src_file);

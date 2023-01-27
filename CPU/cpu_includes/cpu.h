@@ -10,10 +10,10 @@
 /// @brief This struct includes the information about our CPU
 struct cpu_info {
     size_t size;        // The size of commands in file
-    int ip;
+    int ip;             // Index of the code_arary
     int * registers;    // The arrray of registers
     int * RAM;          // The array of RAM 
-    data_t * code;         // The array of code which includes commands
+    data_t * code;      // The array of code which includes commands
     Stack stack;        // The struct of Stack
     Stack ret_stack;    // The Stack for functions
 };
@@ -40,17 +40,21 @@ int CPU_Compile(cpu_info * const cpu);
 /// @param src_file is ptr on source file
 void CPU_Dtor(cpu_info * const cpu, FILE * src_file);
 
-/// @brief 
-/// @param cpu 
-/// @param cmd 
-/// @param ip 
-/// @return 
+//---------------------------------------------------------------------------------------------//
+
+/// @brief Function works with the argument of push
+/// @param cpu is ptr on cpu_info struct
+/// @param cmd is the number of current command
+/// @param ip index of the code_arary
+/// @return the value of the argumnet
 int Get_Push_Arg(cpu_info * const cpu, int cmd);
 
-/// @brief 
-/// @param cpu 
-/// @param cmd 
-/// @param arg 
+//---------------------------------------------------------------------------------------------//
+
+/// @brief Function works with the argument of pop
+/// @param cpu is ptr on cpu_info struct
+/// @param cmd is the number of current command
+/// @param arg is the current argument of stack
 void Get_Pop_Arg(cpu_info * const cpu, int cmd, int arg);
 
 //---------------------------------------------------------------------------------------------//

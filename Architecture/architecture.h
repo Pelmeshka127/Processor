@@ -18,8 +18,10 @@ enum CMD {
 
     CMD_INF      = 13,
     CMD_ZERO     = 14,
+    CMD_POW      = 15,
 
-    CMD_SHOW     = 15,
+    CMD_RAM      = 19,
+    CMD_CIRCLE   = 20,
 
     CMD_JUMP     = 21,
     CMD_JB       = 22,
@@ -42,6 +44,8 @@ enum Regs {
     REG_RDX = 4,
     REG_REX = 5,
     REG_RFX = 6,
+    REG_RGX = 7,
+    REG_RHX = 8,
 };
 
 enum Erros {

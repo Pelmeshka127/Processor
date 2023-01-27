@@ -1,0 +1,79 @@
+in
+pop ax
+
+in
+pop bx
+
+in
+pop rx
+
+push bx
+push 60
+mul
+pop qx
+
+push qx
+push ax
+add
+pop cx
+
+push 1
+pop [cx]
+
+push 0
+pop xx
+
+x_iteration:
+    push 0
+    pop yx
+
+y_iteration:
+    push ax
+    push xx
+    sub
+    pow
+
+    push bx
+    push yx
+    sub
+    pow
+
+    add
+
+    push rx
+    pow
+
+    jb :not_in_circle
+
+    push xx
+    push yx
+    push 60
+    mul
+    add
+    pop dx
+
+    push 1
+    pop [dx]
+
+not_in_circle:
+    push yx
+    push 1
+    add
+    pop yx
+
+    push yx
+    push 30
+    ja :y_iteration
+
+    push xx
+    push 1
+    add
+    pop xx
+
+    push xx
+    push 60
+    ja :x_iteration
+
+ram
+circle
+hlt
