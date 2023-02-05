@@ -8,12 +8,6 @@
 
 #include "text_functions.h"
 
-/// function moves pointer of the string forward to '\0'
-static void Move_Strptr(char ** str);
-
-/// function moves pointer of the string back from '\0'
-static void Back_Move_Strptr(char ** str);
-
 /// functions finds out the number of symbols in file
 static unsigned long Get_File_Size(FILE *);
 
@@ -22,69 +16,6 @@ static unsigned long Get_Line_Count(struct Text_Info * Onegin);
 
 /// function make strings from input file
 static int Make_Strings(struct Text_Info * Onegin);
-
-int Direct_Lex_Cmp(const void * p1, const void * p2)
-{
-    char * str1 = * (char **) p1;
-    char * str2 = * (char **) p2;
-
-    while (*str1 != '\0' && *str2 != '\0')
-    {
-        Move_Strptr(&str1);
-        Move_Strptr(&str2);
-        
-        if (*str1 == *str2 && isalpha(*str1) && isalpha(*str2))
-        {
-            str1++;
-            str2++;
-        }
-        if (*str1 != *str2 && isalpha(*str1) && isalpha(*str2))
-        {
-            break;
-        }
-        if (*str1 == '\0' && *str2 == '\0')
-        {
-            return 0;
-        }
-    }
-    return *str1 - *str2;
-}
-
-
-int Reverse_Lex_Cmp(const void * p1, const void * p2)
-{ 
-    char * s1 = * (char **) p1;
-    char * s2 = * (char **) p2;
-
-    int len1 = strlen(s1);
-    int len2 = strlen(s2);
-
-    char * str1 = s1 + len1 - 1;
-    char * str2 = s2 + len2 - 1;
-
-    while(len1-- != 0 && len2-- != 0)
-    {
-        if (len1 ==0 && len2 == 0)
-        {
-            return 0;
-        }
-
-        Back_Move_Strptr(&str1);
-        Back_Move_Strptr(&str2);
-        
-        if (*str1 == *str2 && isalpha(*str1) && isalpha(*str2))
-        {
-            str1--;
-            str2--;
-        }
-        if (*str1 != *str2 && isalpha(*str1) && isalpha(*str2))
-        {
-            break;
-        }
-    }
-    return *str2 - *str1;
-}
-
 
 int Onegin_Read(struct Text_Info * Onegin, FILE * input_file)
 {
@@ -108,7 +39,7 @@ int Onegin_Read(struct Text_Info * Onegin, FILE * input_file)
 
 void Onegin_Print_To_File(struct Text_Info * Onegin, FILE * fp)
 {
-    for (int cur_str = 0; cur_str < Onegin->lines_count; cur_str++)
+    for (size_t cur_str = 0; cur_str < Onegin->lines_count; cur_str++)
         fprintf(fp, "%s\n", Onegin->pointers[cur_str]);
 }
 
@@ -117,26 +48,6 @@ void Onegin_Dtor(struct Text_Info * Onegin)
 {
     free(Onegin->pointers);
     free(Onegin->buffer);
-}
-
-
-static void Move_Strptr(char **str)
-{
-    assert(str);
-    assert(*str);
-
-    while (**str != '\0' && !(isalpha(**str)))
-        (*str)++;
-}
-
-
-static void Back_Move_Strptr(char ** str)
-{
-    assert(str);
-    assert(*str);
-
-    while (**str != '\0' && !(isalpha(**str)))
-        (*str)--;
 }
 
 static unsigned long Get_File_Size(FILE * fp)

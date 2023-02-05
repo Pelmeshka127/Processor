@@ -3,6 +3,7 @@
 
 #include "../Onegin/text_functions.h"
 #include "../../Architecture/proc_config.h"
+#include "../../Architecture/architecture.h"
 
 #define LISTING
 
@@ -20,10 +21,10 @@ struct Labels {
 };
 
 struct asm_file_info {
-    int cmd_num;
-    data_t * code_arr;
+    cmd_info * cmd_info;
+    code_t * code_arr;
     Labels * labels;
-    int label_array_size;
+    size_t label_array_size;
     int * jumps_index;
     int error;
 };
@@ -33,7 +34,7 @@ struct asm_file_info {
 /// @brief Function finds out labels and writes them to the label arr
 /// @param src_file is ptr on Text_Info struct
 /// @param asmbly is ptr on asm_file_info struct
-int Fisrt_Asm_Compile(Text_Info * const src_file, asm_file_info * const asmbly);
+int First_Asm_Compile(Text_Info * const src_file, asm_file_info * const asmbly);
 
 //---------------------------------------------------------------------------------------------//
 

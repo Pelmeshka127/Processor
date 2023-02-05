@@ -2,13 +2,15 @@
 #define DISASM_H_
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
 
 #include "../../Architecture/proc_config.h"
 #include "../../Architecture/architecture.h"
 
 struct disasm_info {
-    size_t size;
-    data_t * code;
+    cmd_info * cmd_info;
+    code_t * code;
 };
 
 //---------------------------------------------------------------------------------------------//

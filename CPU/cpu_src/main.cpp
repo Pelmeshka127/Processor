@@ -11,7 +11,7 @@ int main(void)
 {
     cpu_info cpu = {};
 
-    FILE * text_file = nullptr, * bin_file = nullptr;
+    FILE * bin_file = nullptr;
 
     cpu.stack = {};
 
@@ -26,7 +26,7 @@ int main(void)
     if (CPU_Ctor(&cpu, bin_file) != No_Error)
         return CPU_Compile_Error;
 
-    if (CPU_Compile(&cpu) != No_Error)
+    if (CPU_Execute(&cpu) != No_Error)
         return CPU_Compile_Error;
 
     CPU_Dtor(&cpu, bin_file);

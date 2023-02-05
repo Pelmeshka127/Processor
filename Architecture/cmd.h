@@ -8,15 +8,15 @@ DEF_CMD(HLT, CMD_HLT, 0,
 
 DEF_CMD(PUSH, CMD_PUSH, Digit, 
 {
-    int elem = Get_Push_Arg(cpu, cpu->code[cpu->ip]);
+    int elem = GET_PUSH_ARG;
     PUSH_STACK(elem);
 })
 
 
 DEF_CMD(POP, CMD_POP, Digit, 
 {
-    int elem = POP_STACK;
-    Get_Pop_Arg(cpu, cpu->code[cpu->ip], elem);
+    int * value = GET_POP_ARG;
+    * value = (int) POP_STACK;
 })
 
 
@@ -38,7 +38,8 @@ DEF_CMD(MUL, CMD_MUL, 0,
 DEF_CMD(DIV, CMD_DIV, 0,
 {
     double a = POP_STACK;
-    double b = POP_STACK; // div 0
+    double b = POP_STACK; // TODO div 0 -<done>
+    CHECK_ZERO;
     double c = b / a;
     PUSH_STACK(c);
 })
@@ -74,91 +75,91 @@ DEF_CMD(OUT, CMD_OUT, 0,
 
 DEF_CMD(CALL, CMD_CALL, Label,
 {
-    PUSH_RET_STACK(cpu->ip + 1);
-    cpu->ip = cpu->code[cpu->ip + 1];
-    cpu->ip--;
+    IP++;
+    PUSH_RET_STACK(IP + sizeof(int) - 1);
+    IP = GET_JUMP_ARG;            // TODO remove cpu -> add dsl - <done>
 })
 
 DEF_CMD(RET, CMD_RET, 0,
 {
-    cpu->ip = POP_RET_STACK;
+    IP = (size_t) POP_RET_STACK;
 })
 
 DEF_CMD(JUMP, CMD_JUMP, Label, 
 {
-    cpu->ip = cpu->code[cpu->ip + 1];
-    cpu->ip--;
+    IP++;
+    IP = GET_JUMP_ARG;
 })  
 
 DEF_CMD(JB, CMD_JB, Label, 
 {
+    IP++;
     if (POP_STACK < POP_STACK)
     {
-        cpu->ip = cpu->code[cpu->ip + 1];
-        cpu->ip--;
+        IP = GET_JUMP_ARG;
     }
     else
-        cpu->ip++;
+        IP += sizeof(int) - 1;
 })
 
 DEF_CMD(JBE, CMD_JBE, Label, 
 {
+    IP++;
     if (POP_STACK <= POP_STACK)
     {
-        cpu->ip = cpu->code[cpu->ip + 1];
-        cpu->ip--;
+        IP = GET_JUMP_ARG;
     }
     else 
-        cpu->ip++;
+        IP += sizeof(int) - 1;
 })
 
 DEF_CMD(JA, CMD_JA, Label, 
 {
+    IP++;
     if (POP_STACK > POP_STACK)
     {
-        cpu->ip = cpu->code[cpu->ip + 1];
-        cpu->ip--;
+        IP = GET_JUMP_ARG;
     }
     else 
-        cpu->ip++;
+        IP += sizeof(int) - 1;
 })
 
 DEF_CMD(JAE, CMD_JAE, Label, 
 {
+    IP++;
     if (POP_STACK >= POP_STACK)
     {
-        cpu->ip = cpu->code[cpu->ip + 1];
-        cpu->ip--;
+        IP = GET_JUMP_ARG;
     }
     else 
-        cpu->ip++;
+        IP += sizeof(int) - 1;
 })
 
 DEF_CMD(JE, CMD_JE, Label,
 {
-    if (POP_STACK == POP_STACK)
+    IP++;
+    if ((int) POP_STACK == (int) POP_STACK)
     {
-        cpu->ip = cpu->code[cpu->ip + 1];
-        cpu->ip--;
+        IP = GET_JUMP_ARG;
     }
     else 
-        cpu->ip++;
+        IP += sizeof(int) - 1;
 })
 
 DEF_CMD(JNE, CMD_JNE, Label,
 {
-    if (POP_STACK != POP_STACK)
+    IP++;
+    if ((int) POP_STACK != (int) POP_STACK)
     {
-        cpu->ip = cpu->code[cpu->ip + 1];
-        cpu->ip--;
+        IP = GET_JUMP_ARG;
     }
     else 
-        cpu->ip++;
+        IP += sizeof(int) - 1;
 })
 
 DEF_CMD(RAM, CMD_RAM, 0,
 {
-    for (int i = 0; i < DEF_RAM_SIZE; i++)
+    for (int i = 0; i < Def_Ram_Size; i++)
     {
         if (i % 60 == 0)
             printf("\n");
@@ -184,7 +185,7 @@ DEF_CMD(CIRCLE, CMD_CIRCLE, 0,
 {
     FILE * fp = nullptr;
     fp = fopen("..//Tests/circle_show.txt", "w");
-    for (int i = 0; i < DEF_RAM_SIZE; i++)
+    for (int i = 0; i < Def_Ram_Size; i++)
     {
         if (i % 60 == 0)
             fprintf(fp, "\n");

@@ -9,11 +9,12 @@
 
 /// @brief This struct includes the information about our CPU
 struct cpu_info {
-    size_t size;        // The size of commands in file
-    int ip;             // Index of the code_arary
+    cmd_info * cmd_info;
+    //size_t size;        // The size of commands in file
+    size_t ip;             // Index of the code_arary
     int * registers;    // The arrray of registers
     int * RAM;          // The array of RAM 
-    data_t * code;      // The array of code which includes commands
+    code_t * code;      // The array of code which includes commands
     Stack stack;        // The struct of Stack
     Stack ret_stack;    // The Stack for functions
 };
@@ -31,7 +32,7 @@ int CPU_Ctor(cpu_info * const cpu, FILE * src_file);
 /// @brief Function compiles the array of commands
 /// @param cpu is pts on cpu_info struct
 /// @return CPU_Compile_Error if compiling failed, No_Error if it's ok
-int CPU_Compile(cpu_info * const cpu);
+int CPU_Execute(cpu_info * const cpu);
 
 //---------------------------------------------------------------------------------------------//
 
@@ -55,8 +56,13 @@ int Get_Push_Arg(cpu_info * const cpu, int cmd);
 /// @param cpu is ptr on cpu_info struct
 /// @param cmd is the number of current command
 /// @param arg is the current argument of stack
-void Get_Pop_Arg(cpu_info * const cpu, int cmd, int arg);
+int * Get_Pop_Arg(cpu_info * const cpu, int cmd);
 
 //---------------------------------------------------------------------------------------------//
+
+/// @brief Function works with the argument of jump
+/// @param cpu is ptr on cpu_info struct
+/// @return the new value of cpu->ip
+size_t Jump_Arg(cpu_info * const cpu);
 
 #endif

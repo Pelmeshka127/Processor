@@ -71,6 +71,8 @@ void Logfile_Stack_Print_Err(Stack * const my_stack, const int Err_Code, const c
 
 //---------------------------------------------------------------------------------------------//
 
+#ifdef HASH_PROTECT
+
 void Logfile_Hash_Err(Stack * const my_stack, hash_t Cur_Hash_Value, const int Error, const char * const File, const char * const Function, const int Line)
 {
     if (Error == Stack_Hash_Err)
@@ -81,6 +83,8 @@ void Logfile_Hash_Err(Stack * const my_stack, hash_t Cur_Hash_Value, const int E
         fprintf(logfile, "ERROR IN FUNCION %s, IN FILE %s, IN LINE %d.\nTHE VALUE OF DATA_HASH WAS CHANGED FROM %zu TO %zu\n\n",
                         Function, File, Line, Cur_Hash_Value, my_stack->data_hash);
 }
+
+#endif
 
 //---------------------------------------------------------------------------------------------//
 

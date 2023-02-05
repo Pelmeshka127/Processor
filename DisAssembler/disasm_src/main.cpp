@@ -1,4 +1,3 @@
-#include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 
@@ -7,7 +6,7 @@
 
 int main(void)
 {
-    disasm_info disasm = {.code = 0, .size = 0};
+    disasm_info disasm = {};
 
     FILE * src_file = nullptr, * dst_file = nullptr;
 

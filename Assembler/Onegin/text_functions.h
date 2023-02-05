@@ -20,12 +20,6 @@ enum Onegin_Coderr {
     Alloc_Error = 5,
 };
 
-/// function compares two strings
-int Direct_Lex_Cmp(const void * s1, const void * s2);
-
-/// functions compares two strings in reverse alphabetical order
-int Reverse_Lex_Cmp(const void * p1, const void * p2);
-
 /// function reads input file
 int Onegin_Read(struct Text_Info * Onegin, FILE * fp);
 

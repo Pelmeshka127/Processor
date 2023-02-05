@@ -10,10 +10,9 @@
 
 int main(int argc, char ** argv)
 {
-    Text_Info src_file = {.buffer = nullptr, .lines_count = 0, .symbols_count = 0, .pointers = nullptr};
+    Text_Info src_file = {};
 
-    asm_file_info asmbly = {.cmd_num = 0, .code_arr = nullptr, .error = No_Error, .jumps_index = nullptr,
-                            .label_array_size = DEF_LABEL_SIZE, .labels = nullptr};
+    asm_file_info asmbly = {};
 
     FILE * input_file = nullptr, * bin_file = nullptr;
 
@@ -38,12 +37,15 @@ int main(int argc, char ** argv)
         return Reading_File_Err;
     }
     
-    if (Fisrt_Asm_Compile(&src_file, &asmbly) != No_Error)
+    if (First_Asm_Compile(&src_file, &asmbly) != No_Error)
     {
         fprintf(stderr, "First assembly failed\n");
         Asm_Dtor(&src_file, &asmbly, input_file);
         return Asm_Compile_Error;
-    } 
+    }
+    //printf("First is OK\n"); 
+    /*for (int i = 0; i < src_file.lines_count; i++)
+        printf("%s\n", src_file.pointers[i]);*/
 
     if (Second_Asm_Compile(&src_file, &asmbly) != No_Error)
     {
@@ -52,11 +54,13 @@ int main(int argc, char ** argv)
         return Asm_Compile_Error;
     }
 
-    if (fwrite(&DEF_CP, sizeof(int), 1, bin_file) < 1)
+    //printf("Second is OK\n");
+    /*for (int i = 0; i < src_file.lines_count; i++)
+        printf("%s\n", src_file.pointers[i]);*/
+
+    if (fwrite(asmbly.cmd_info, sizeof(cmd_info), 1, bin_file) < 1)
         return Writing_Error;
-    if (fwrite(&asmbly.cmd_num, sizeof(int), 1, bin_file) < 1)
-        return Writing_Error;
-    if (fwrite(asmbly.code_arr, sizeof(data_t), (unsigned long) asmbly.cmd_num, bin_file) < (size_t) asmbly.cmd_num)
+    if (fwrite(asmbly.code_arr, sizeof(code_t), (unsigned long)asmbly.cmd_info->file_size, bin_file) < (size_t)asmbly.cmd_info->file_size)
         return Writing_Error;
 
 #ifdef LISTING

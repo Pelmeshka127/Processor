@@ -61,7 +61,7 @@ void Stack_Print_Err(Stack * const my_stack, const int Err_Code, const char * co
 /// @param File the pointer on file
 /// @param Function the pointer of function
 /// @param Line the pointer of line
-void Stack_Dump(Stack * const my_stack, const char * const File, const char * const Function, const int Line);
+void Stack_Dump(Stack * const my_stack);
 
 //---------------------------------------------------------------------------------------------//
 

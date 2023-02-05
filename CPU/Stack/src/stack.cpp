@@ -12,10 +12,14 @@ static const elem_t Poison = -1;
 
 //---------------------------------------------------------------------------------------------//
 
+#ifdef CANARY_PROTECT
+
 /// @brief Function sets canary after the allocation of memory
 /// @param my_stack is ptr on struct stack
 /// @param alloc_mem is ptr on allocated memory for stack data 
 static void Make_Canary_Protect(Stack * const my_stack, char * alloc_mem);
+
+#endif
 
 //---------------------------------------------------------------------------------------------//
 
@@ -33,9 +37,13 @@ static char * Stack_Recalloc(Stack * const my_stack);
 
 //---------------------------------------------------------------------------------------------//
 
+#ifdef CANARY_PROTECT
+
 /// @brief Function sets canaries after the reallocation of memeory
 /// @param my_stack is ptr on struct Stack
 static void Canary_Recalloc(Stack * const my_stack, const char * const add_alloc_mem);
+
+#endif
 
 //---------------------------------------------------------------------------------------------//
 
@@ -72,7 +80,7 @@ int Stack_Ctor(Stack * const my_stack)
 #ifdef CANARY_PROTECT
     Make_Canary_Protect(my_stack, alloc_mem);
 #else
-    my_stack->data = (elem_t *) (alloc_mem);
+    my_stack->data = (elem_t *) alloc_mem;
 #endif
 
     for (int i = 0; i < (elem_t) my_stack->capacity; i++)

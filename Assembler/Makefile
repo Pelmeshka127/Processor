@@ -13,10 +13,9 @@ FLAGS = -D _DEBUG -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++\
 		   -Wno-literal-range -Wno-missing-field-initializers -Wno-narrowing\
 		    -Wno-old-style-cast -Wno-varargs -Wstack-protector -fcheck-new\
 			 -fsized-deallocation -fstack-protector -fstrict-overflow -fno-omit-frame-pointer\
-			  -Wlarger-than=8192 -pie -fPIE\
+			  -Wlarger-than=8192 -fPIE\
 			   -fsanitize=address,alignment,bool,bounds,enum,float-cast-overflow,\
 			   -fsanitize=float-divide-by-zero,integer-divide-by-zero,nonnull-attribute,null,\
-			   -fsanitize=object-size,return,returns-nonnull-attribute,shift,\
 			   -fsanitize=address,signed-integer-overflow,undefined,unreachable,vla-bound,vptr,
 
 asmtask: main.o assembler.o text_functions.o

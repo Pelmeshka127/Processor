@@ -10,7 +10,7 @@ void Stack_Verify(Stack * const my_stack, const char * const File, const char * 
     assert(my_stack);
 
 #ifdef DUMP_DEBUG
-    Stack_Dump(my_stack, File, Function, Line);
+    Stack_Dump(my_stack);
 #endif
 
     if (my_stack->size < 0)
@@ -80,7 +80,7 @@ void Stack_Print_Err(Stack * const my_stack, const int Err_Code, const char * co
 
 //---------------------------------------------------------------------------------------------//
 
-void Stack_Dump(Stack * const my_stack, const char * const File, const char * const Function, const int Line)
+void Stack_Dump(Stack * const my_stack)
 {
     assert(my_stack);
 
@@ -89,8 +89,8 @@ void Stack_Dump(Stack * const my_stack, const char * const File, const char * co
 #else
     printf("The capasity of stack is %zu. The size of stack is %zu\n", my_stack->capacity, my_stack->size);
     
-    for (int i = 0; i < my_stack->capacity; i++)
-        printf("The [%d] elem of data is %.2f.\n", i, my_stack->data[i]);
+    for (size_t i = 0; i < my_stack->capacity; i++)
+        printf("The [%zu] elem of data is %.2f.\n", i, my_stack->data[i]);
 #endif
 }
 

@@ -1,7 +1,10 @@
-#include <assert.h>
-
 #include "../disasm_includes/disasm.h"
 
+/// @brief 
+/// @param disasm 
+/// @param dst_file 
+/// @param ip 
+/// @param number 
 static void Get_Arg(disasm_info * const disasm, FILE * dst_file, int * ip, int number);
 
 //---------------------------------------------------------------------------------------------//
@@ -10,18 +13,17 @@ int Disasm_Ctor(disasm_info * const disasm, FILE * src_file)
 {
     assert(disasm);
 
-    int CP = 0;
-    fread(&CP, 1, sizeof(int), src_file);
-    if (CP != DEF_CP)
+    disasm->cmd_info = (cmd_info *)calloc (1, sizeof(cmd_info));
+
+    fread(&disasm->cmd_info, 1, sizeof(int), src_file);
+    if (disasm->cmd_info->CP != Def_CP)
         return Src_File_Err;
 
-    fread(&disasm->size, 1, sizeof(int), src_file);
-
-    disasm->code = (data_t *)calloc (disasm->size, sizeof(data_t));
+    disasm->code = (code_t *)calloc (disasm->cmd_info->file_size, sizeof(code_t));
     if (disasm->code == nullptr)
         return Alloc_Err;
 
-    fread(disasm->code, sizeof(data_t), disasm->size, src_file);
+    fread(disasm->code, sizeof(code_t), disasm->cmd_info->file_size, src_file);
 
     return No_Error;
 }
@@ -46,7 +48,7 @@ int Disasm_Compile(disasm_info * const disasm, FILE * dst_file)
     assert(disasm);
 
     int ip = 0;
-    while (ip < disasm->size)
+    while (ip < disasm->cmd_info->file_size)
     {
         switch (disasm->code[ip] & CMD_MASK)
         {
@@ -109,6 +111,7 @@ int Disasm_Dtor(disasm_info * const disasm, FILE * dst_file)
     if (fclose(dst_file) == false)
         return Reading_File_Err;
     free(disasm->code);
+    free(disasm->cmd_info);
 }
 
 //---------------------------------------------------------------------------------------------//
