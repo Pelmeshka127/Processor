@@ -76,6 +76,8 @@ int List_Dtor(Text_Info * const list_info);
 
 int Make_Listing(Text_Info * const list_info, asm_file_info * const asmbly);
 
+int Listing_Argument(asm_file_info * const asmbly, int cmd_num);
+
 #endif
 
 //---------------------------------------------------------------------------------------------//

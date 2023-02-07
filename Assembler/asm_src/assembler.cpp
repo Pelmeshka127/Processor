@@ -9,6 +9,8 @@
 #include "../../Architecture/architecture.h"
 #include "../Onegin/text_functions.h"
 
+const int Label_Array_Multiplier = 2;
+
 //---------------------------------------------------------------------------------------------//
 
 /// @brief Function finds out labels in the src file and writes down it to the labels array
@@ -17,7 +19,7 @@
 /// @param cur_num_str is a number of the current string
 /// @param label_index is a index of the current label
 /// @return Label_Error if Check_Label failed, No_Error if it's ok
-static int Find_Labels(char * const cur_str, asm_file_info * const asmbly, int * cur_num_str, int * label_index);
+static int Find_Labels(char * const cur_str, asm_file_info * const asmbly, int * cur_num_str, size_t * label_index);
 
 //---------------------------------------------------------------------------------------------//
 
@@ -26,6 +28,13 @@ static int Find_Labels(char * const cur_str, asm_file_info * const asmbly, int *
 /// @param cur_label is a string with the current label
 /// @return Label_Error if there's the same label, No_Error if it's ok
 static int Check_Label(asm_file_info * const asmbly, char * cur_label);
+
+//---------------------------------------------------------------------------------------------//
+
+/// @brief Function decreases the array of labels
+/// @param asmbly is ptr in asm-file_info struct
+/// @return Label_Error if there's error, No_Error if it's ok
+static int Realloc_Label_Array(asm_file_info * const asmbly);
 
 //---------------------------------------------------------------------------------------------//
 
@@ -190,7 +199,7 @@ int First_Asm_Compile(Text_Info * const src_file, asm_file_info * const asmbly)
 
     int cur_num_str = 0;
     int jump_index  = 0;
-    int label_index = 0;
+    size_t label_index = 0;
 
     while (cur_num_str < (int) src_file->lines_count)
     {
@@ -401,10 +410,19 @@ static int Stricmp(const char * str1, const char * str2)
 
 //---------------------------------------------------------------------------------------------//
 
-static int Find_Labels(char * const cur_str, asm_file_info * const asmbly, int * cur_num_str, int * label_index)
+static int Find_Labels(char * const cur_str, asm_file_info * const asmbly, int * cur_num_str, size_t * label_index)
 {
     assert(cur_str);
     assert(asmbly);
+
+    if (*label_index >= asmbly->label_array_size - 1)
+    {
+        if (Realloc_Label_Array(asmbly) == Alloc_Err)
+        {
+            fprintf(stderr, "Recallocation of labels failed\n");
+            return Label_Error;
+        }
+    }
 
     char * cur_label = cur_str;
     cur_label[strlen(cur_label) - 1] = '\0';
@@ -417,10 +435,24 @@ static int Find_Labels(char * const cur_str, asm_file_info * const asmbly, int *
 
     asmbly->labels[*label_index].label_line = cur_label;
     asmbly->labels[*label_index].label_num  = (int) asmbly->cmd_info->file_size;
-
     *label_index += 1;
     *cur_num_str += 1;
 
+    return No_Error;
+}
+
+//---------------------------------------------------------------------------------------------//
+
+static int Realloc_Label_Array(asm_file_info * const asmbly)
+{
+    assert(asmbly);
+
+    asmbly->label_array_size *= Label_Array_Multiplier;
+
+    asmbly->labels = (Labels *)realloc (asmbly->labels, asmbly->label_array_size * sizeof(Labels));
+    if (asmbly->labels == nullptr)
+        return Alloc_Err;
+    
     return No_Error;
 }
 
@@ -610,15 +642,15 @@ static int Read_Common_Arg(char * string, asm_file_info * const asmbly, int cmd)
     else if (Stricmp(#name, cmd) == 0)                                                                                          \
     {                                                                                                                           \
         if (arg == 0) {                                                                                                         \
-            fprintf(listing, "\n%04zu      %04d    %-25s    %02d", cur_num_str, cmd_num, cur_str, asmbly->code_arr[cmd_num]);    \
+            fprintf(listing, "\n%04zu      %04d    %-25s    %02d", cur_num_str, cmd_num, cur_str, asmbly->code_arr[cmd_num]);   \
             cmd_num++;}                                                                                                         \
         else if (arg == Label) {                                                                                                \
-            fprintf(listing, "\n%04zu      %04d    %-25s    %02d    %02d",                                                       \
-            cur_num_str, cmd_num, cur_str, asmbly->code_arr[cmd_num], asmbly->code_arr[cmd_num+1]);                             \
+            fprintf(listing, "\n%04zu      %04d    %-25s    %02d    %02d",                                                      \
+            cur_num_str, cmd_num, cur_str, asmbly->code_arr[cmd_num], Listing_Argument(asmbly, cmd_num));                       \
             cmd_num += 1 + sizeof(int);}                                                                                        \
         else if (arg == Digit) {                                                                                                \
-            fprintf(listing, "\n%04zu      %04d    %-25s    %02d    %02d",                                                       \
-            cur_num_str, cmd_num, cur_str, asmbly->code_arr[cmd_num], (asmbly->code_arr[cmd_num+1]));                           \
+            fprintf(listing, "\n%04zu      %04d    %-25s    %02d    %02d",                                                      \
+            cur_num_str, cmd_num, cur_str, asmbly->code_arr[cmd_num], Listing_Argument(asmbly, cmd_num));                       \
             cmd_num += 1 + sizeof(int);}                                                                                        \
     }
 
@@ -666,6 +698,20 @@ int Make_Listing(Text_Info * const list_file, asm_file_info * const asmbly)
         cur_num_str++;
     }
     return No_Error;
+}
+
+//---------------------------------------------------------------------------------------------//
+
+int Listing_Argument(asm_file_info * const asmbly, int cmd_num)
+{
+    assert(asmbly);
+
+    int argument = asmbly->code_arr[cmd_num + 1] + 
+                   asmbly->code_arr[cmd_num + 2] * 256 +
+                   asmbly->code_arr[cmd_num + 3] * 256 * 256 + 
+                   asmbly->code_arr[cmd_num + 4] * 256 * 256 * 256;
+        
+    return argument;
 }
 
 //---------------------------------------------------------------------------------------------//

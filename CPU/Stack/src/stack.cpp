@@ -210,7 +210,7 @@ static char * Stack_Recalloc(Stack * const my_stack)
     size_t Add_Mem_Value = 2 * sizeof(canary_t) + my_stack->capacity * sizeof(elem_t) +
     (sizeof(canary_t) - (my_stack->capacity % sizeof(canary_t))) * sizeof(elem_t);
 #else
-    size_t Add_Mem_Value = my_stack->capacity * sizeof(elem_t);
+    size_t Add_Mem_Value = my_stack->capacity /** sizeof(elem_t)*/;
 #endif
 
 #ifdef CANARY_PROTECT

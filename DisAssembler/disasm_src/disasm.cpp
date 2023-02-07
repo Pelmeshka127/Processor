@@ -15,7 +15,7 @@ int Disasm_Ctor(disasm_info * const disasm, FILE * src_file)
 
     disasm->cmd_info = (cmd_info *)calloc (1, sizeof(cmd_info));
 
-    fread(&disasm->cmd_info, 1, sizeof(int), src_file);
+    fread(disasm->cmd_info, 1, sizeof(cmd_info), src_file);
     if (disasm->cmd_info->CP != Def_CP)
         return Src_File_Err;
 
@@ -30,15 +30,16 @@ int Disasm_Ctor(disasm_info * const disasm, FILE * src_file)
 
 //---------------------------------------------------------------------------------------------//
 
-#define DEF_CMD(name, number, arg, ...)                             \
-    case number:                                                    \
-        if (arg == Digit){                                          \
-            fprintf(dst_file, "%s ", #name);                        \
-            Get_Arg(disasm, dst_file, &ip, number);}                \
-        else if (arg == Label)                                      \
-            fprintf(dst_file, "%s %d\n", #name, disasm->code[++ip]);\
-        else if (arg == 0)                                          \
-            fprintf(dst_file, "%s\n", #name);                       \
+#define DEF_CMD(name, number, arg, ...)                                 \
+    case number:                                                        \
+        if (arg == Digit){                                              \
+            fprintf(dst_file, "%s ", #name);                            \
+            Get_Arg(disasm, dst_file, &ip, number);}                    \
+        else if (arg == Label) {                                        \
+            fprintf(dst_file, "%s %d\n", #name, disasm->code[ip + 1]);  \
+            ip += sizeof(int); }                                        \
+        else if (arg == 0)                                              \
+            fprintf(dst_file, "%s\n", #name);                           \
         break;
 
 //---------------------------------------------------------------------------------------------//
@@ -70,34 +71,39 @@ static void Get_Arg(disasm_info * const disasm, FILE * dst_file, int * ip, int n
 
     if (disasm->code[*ip] & ARG_RAM)
     {
-        *ip+=1;
         fprintf(dst_file, "[");
-        if (disasm->code[*ip-1] & ARG_IMMED && disasm->code[*ip-1] & ARG_REG)
+        if (disasm->code[*ip] & ARG_IMMED && disasm->code[*ip] & ARG_REG)
         {
-            fprintf(dst_file, "%d+%cx]\n", disasm->code[*ip], disasm->code[*ip+1] + 96);
-            *ip+=1;
+            fprintf(dst_file, "%d+%cx]\n", disasm->code[*ip+1], disasm->code[*ip+1+sizeof(int)] + 96);
+            *ip += 2 * sizeof(int);
         }
-        else if (disasm->code[*ip-1] & ARG_IMMED)
-            fprintf(dst_file, "%d]\n", disasm->code[*ip]);
-        else if (disasm->code[*ip-1] & ARG_REG)
-            fprintf(dst_file, "%cx]\n", disasm->code[*ip] + 96);
+        else if (disasm->code[*ip] & ARG_IMMED)
+        {
+            fprintf(dst_file, "%d]\n", disasm->code[*ip+1]);
+            *ip += sizeof(int);
+        }
+        else if (disasm->code[*ip] & ARG_REG)
+        { 
+           fprintf(dst_file, "%cx]\n", disasm->code[*ip+1] + 96);
+           *ip += sizeof(int);
+        }
     }
 
     else if (disasm->code[*ip] & ARG_IMMED)
     {
         fprintf(dst_file, "%d\n", disasm->code[*ip+1]);
-        *ip+=1;
+        *ip += sizeof(int);
         if (disasm->code[*ip] & ARG_REG)
         {
             fprintf(dst_file, "+%cx\n", disasm->code[*ip+2] + 96);
-            *ip+=1;
+            *ip += sizeof(int);
         }
     }
 
     else if (disasm->code[*ip] & ARG_REG)
     {
         fprintf(dst_file, "%cx\n", disasm->code[*ip+1] + 96);
-        *ip+=1;
+        *ip += sizeof(int);
     }
 
     else
@@ -112,6 +118,7 @@ int Disasm_Dtor(disasm_info * const disasm, FILE * dst_file)
         return Reading_File_Err;
     free(disasm->code);
     free(disasm->cmd_info);
+    return No_Error;
 }
 
 //---------------------------------------------------------------------------------------------//
