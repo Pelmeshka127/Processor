@@ -1,0 +1,134 @@
+in
+pop rax
+in
+pop rbx
+in
+pop rcx
+
+push rax
+push 0
+je linear
+
+jmp square
+
+
+linear:
+    push rbx
+    push 0
+    je bzero
+
+    push rcx
+    push 0
+    je czero
+
+    push rcx
+    push rbx
+    div
+    minus
+    out
+    hlt
+
+square:
+    push rbx
+    push 0
+    jne desc
+
+    push rax
+    push rcx
+    mul
+    push 0
+    jb norrots
+
+    push rax
+    push rcx
+    mul
+    push 0
+    je oneroot
+
+    push rcx
+    push rax
+    div
+    minus
+    sqrt
+    pop [1]
+    push [1]
+    minus
+    out
+    push [1]
+    out
+    hlt
+
+desc:
+    push rax
+    push rcx
+    push 4
+    mul
+    mul
+    push rbx
+    push rbx
+    mul
+    sub
+    pop rdx
+
+    push rdx
+    push 0
+    je oneroot
+
+    push rdx
+    push 0
+    ja norrots
+
+    push rdx
+    sqrt
+    pop rdx
+
+    push rdx
+    push rbx
+    minus
+    sub
+    push rax
+    push 2
+    mul
+    div
+    out
+
+    push rdx
+    push rbx
+    minus
+    add
+    push rax
+    push 2
+    mul
+    div
+    out
+    hlt
+
+
+oneroot:
+    push rbx
+    minus
+    push rax
+    push 2
+    mul
+    div
+    out
+    hlt
+
+bzero:
+    push rcx
+    push 0
+    je rootsinf
+    jmp norrots
+
+czero:
+    push rcx
+    out
+    hlt
+
+rootsinf:
+    besk
+    hlt
+
+norrots:
+    zero
+    hlt

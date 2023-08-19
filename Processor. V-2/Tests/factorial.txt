@@ -1,0 +1,24 @@
+in
+pop rax
+
+call factorial
+out
+hlt
+
+factorial:
+    push rax
+    push rax
+    push 1
+    je exit
+
+    push 1
+    push rax
+    sub
+    pop rax
+
+    call factorial
+    mul
+    ret
+
+exit:
+    ret

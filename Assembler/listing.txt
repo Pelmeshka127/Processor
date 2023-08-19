@@ -1,5 +1,0 @@
-Line     Addres   Text                         Code
-
-0000      0000    pop [1+ax]                   226    01
-0001      0005    out                          01
-0002      0006    hlt                          00
